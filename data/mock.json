@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "members": 10000,
+    "projects": 48000,
+    "hiringPartners": 120,
+    "avgPlacementBoost": 3.2
+  },
+  "tracks": [
+    {
+      "id": "SE",
+      "label": "Software Engineering",
+      "description": "Build production-grade software. APIs, databases, CLI tools, Docker — real systems used by real engineers.",
+      "skills": ["Python", "REST APIs", "SQL", "Git", "Docker", "Testing"],
+      "status": "enrolling",
+      "days": 60
+    },
+    {
+      "id": "DS",
+      "label": "Data Science",
+      "description": "Go from raw data to actionable insights. Master Pandas, statistical analysis, machine learning models.",
+      "skills": ["Python", "Pandas", "NumPy", "ML", "Visualization", "Stats"],
+      "status": "enrolling",
+      "days": 60
+    },
+    {
+      "id": "AI",
+      "label": "AI Engineering",
+      "description": "Ship production-ready AI. Build LLM apps, RAG pipelines, AI agents — the skills companies are hiring for.",
+      "skills": ["LLMs", "RAG", "AI Agents", "Claude API", "MCP", "Vector DBs"],
+      "status": "enrolling",
+      "days": 60
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Priya Sharma",
+      "college": "IIT Delhi",
+      "track": "SE",
+      "role": "SDE Intern @ Amazon",
+      "quote": "ABTalks SE track was the best decision of my 3rd year. The daily streak forced me to code even on bad days — and that consistency got me my Amazon internship. The GitHub + LinkedIn combo built a portfolio that spoke louder than my CGPA.",
+      "daysCompleted": 60,
+      "avatar": "P"
+    },
+    {
+      "name": "Arjun Mehta",
+      "college": "NIT Trichy",
+      "track": "DS",
+      "role": "Data Analyst @ Swiggy",
+      "quote": "I was stuck in tutorial hell. ABTalks forced me to actually build. 60 days later I had 12 real data projects on GitHub. The recruiter from Swiggy literally found me from my LinkedIn posts.",
+      "daysCompleted": 58,
+      "avatar": "A"
+    },
+    {
+      "name": "Sneha Patel",
+      "college": "BITS Pilani",
+      "track": "AI",
+      "role": "AI Researcher Intern @ Adobe",
+      "quote": "The AI Engineering track is legitimately 3-5 years ahead of what colleges teach. By day 30, I was building production RAG apps that now live on my resume. Adobe hired me for exactly those skills.",
+      "daysCompleted": 60,
+      "avatar": "S"
+    },
+    {
+      "name": "Rohan Singh",
+      "college": "VIT Vellore",
+      "track": "SE",
+      "role": "Backend Dev Freelancer",
+      "quote": "The streak shield system saved me twice during exams. That thoughtful design shows ABTalks actually understands student life — you're not designing for robots, you're designing for us.",
+      "daysCompleted": 52,
+      "avatar": "R"
+    },
+    {
+      "name": "Kavya Reddy",
+      "college": "Amrita VV",
+      "track": "DS",
+      "role": "ML Intern @ Freshworks",
+      "quote": "The leaderboard and referral system kept me competitive and social. My entire friend group from hostel joined and we'd compare streaks every night. Made learning genuinely fun.",
+      "daysCompleted": 60,
+      "avatar": "K"
+    },
+    {
+      "name": "Vikram Bose",
+      "college": "IIIT Hyderabad",
+      "track": "AI",
+      "role": "AI Startup Founder",
+      "quote": "60 days. 60 GitHub commits. 60 LinkedIn posts. By the end, I had 800 followers who cared about my work, a co-founder, and the first user of my startup. ABTalks literally changed my life trajectory.",
+      "daysCompleted": 60,
+      "avatar": "V"
+    }
+  ],
+  "leaderboard": [
+    { "rank": 1, "username": "priya_sharma", "name": "Priya Sharma", "college": "IIT Delhi", "streak": 60, "track": "SE" },
+    { "rank": 2, "username": "arjun_mehta", "name": "Arjun Mehta", "college": "NIT Trichy", "streak": 58, "track": "DS" },
+    { "rank": 3, "username": "sneha_patel", "name": "Sneha Patel", "college": "BITS Pilani", "streak": 57, "track": "AI" },
+    { "rank": 4, "username": "rohan_singh", "name": "Rohan Singh", "college": "VIT Vellore", "streak": 52, "track": "SE" },
+    { "rank": 5, "username": "kavya_reddy", "name": "Kavya Reddy", "college": "Amrita VV", "streak": 50, "track": "DS" }
+  ],
+  "social": {
+    "instagram": "https://www.instagram.com/abtalksonai/",
+    "linkedin": "https://www.linkedin.com/company/abtalks-on-ai/",
+    "youtube": "https://www.youtube.com/@ABTalksOnAI",
+    "twitter": "https://x.com/abtalksonai",
+    "discord": "https://discord.gg/j4Q8tvDj6",
+    "whatsapp": "https://chat.whatsapp.com/K4VRi7NJHqJ7YE2jrOzRf8"
+  }
+}
