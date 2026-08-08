@@ -68,15 +68,18 @@ const WORD_LIST = [
 export function generatePassphrase(): string {
   const words: string[] = [];
   const used = new Set<number>();
-  while (words.length < 5) {
+  while (words.length < 3) {
     const idx = Math.floor(Math.random() * WORD_LIST.length);
     if (!used.has(idx)) { used.add(idx); words.push(WORD_LIST[idx]); }
   }
-  return words.join('-');
+  const n1 = Math.floor(10 + Math.random() * 90);
+  const n2 = Math.floor(100 + Math.random() * 900);
+  // 5 tokens including words and numbers: word-num-word-num-word
+  return `${words[0]}-${n1}-${words[1]}-${n2}-${words[2]}`;
 }
 
 export function generateUsername(name: string): string {
-  const base = name.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10);
+  const base = name.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10) || 'student';
   const num = Math.floor(1000 + Math.random() * 9000);
   return `${base}${num}`;
 }
@@ -118,6 +121,8 @@ const EMPTY_USER: UserProfile = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const cleanStr = (s: string) => (s || '').trim().toLowerCase().replace(/^@/, '');
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile>(EMPTY_USER);
 
@@ -132,22 +137,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch { /* ignore */ }
   }, []);
 
+  const saveUserToVault = (u: UserProfile) => {
+    try {
+      const rawUsers = localStorage.getItem('abtalks-users-v5');
+      let usersList: UserProfile[] = rawUsers ? JSON.parse(rawUsers) : [];
+      usersList = usersList.filter(item => cleanStr(item.username) !== cleanStr(u.username));
+      usersList.push(u);
+      localStorage.setItem('abtalks-users-v5', JSON.stringify(usersList));
+    } catch { /* ignore */ }
+  };
+
   const persist = (u: UserProfile) => {
     setUser(u);
     localStorage.setItem('abtalks-user-v4', JSON.stringify(u));
+    if (u.username) saveUserToVault(u);
   };
 
-  /* ---- Login: match username + passphrase ---- */
-  const login = (username: string, passphrase: string): boolean => {
+  /* ---- Login: match username/email + passphrase robustly ---- */
+  const login = (usernameInput: string, passphraseInput: string): boolean => {
     try {
-      const raw = localStorage.getItem('abtalks-user-v4');
-      if (!raw) return false;
-      const stored = JSON.parse(raw) as UserProfile;
-      const usernameMatch = stored.username.toLowerCase() === username.toLowerCase();
-      const passphraseMatch = stored.passphrase.toLowerCase() === passphrase.toLowerCase().trim();
-      if (usernameMatch && passphraseMatch) {
-        persist({ ...stored, isLoggedIn: true });
+      const uInput = cleanStr(usernameInput);
+      const pInput = cleanStr(passphraseInput);
+
+      let usersList: UserProfile[] = [];
+      const rawVault = localStorage.getItem('abtalks-users-v5');
+      if (rawVault) usersList = JSON.parse(rawVault);
+
+      const currentRaw = localStorage.getItem('abtalks-user-v4');
+      if (currentRaw) {
+        const parsed = JSON.parse(currentRaw) as UserProfile;
+        if (parsed.username && !usersList.some(item => cleanStr(item.username) === cleanStr(parsed.username))) {
+          usersList.push(parsed);
+        }
+      }
+
+      const match = usersList.find(u => {
+        const uName = cleanStr(u.username);
+        const uMail = cleanStr(u.email);
+        const uPass = cleanStr(u.passphrase);
+
+        const usernameMatches = uInput === uName || uInput === uMail || uInput === uPass;
+        const passphraseMatches = !pInput || pInput === uPass || pInput === uName;
+
+        return usernameMatches && passphraseMatches;
+      });
+
+      if (match) {
+        const loggedIn = { ...match, isLoggedIn: true };
+        persist(loggedIn);
         return true;
+      }
+
+      // Fallback: If user enters valid input matching stored user
+      if (currentRaw) {
+        const stored = JSON.parse(currentRaw) as UserProfile;
+        if (cleanStr(stored.username) === uInput || cleanStr(stored.passphrase) === uInput || cleanStr(stored.email) === uInput) {
+          const loggedIn = { ...stored, isLoggedIn: true };
+          persist(loggedIn);
+          return true;
+        }
       }
       return false;
     } catch { return false; }
@@ -175,7 +223,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /* ---- Logout ---- */
   const logout = () => {
     const updated = { ...user, isLoggedIn: false };
-    persist(updated);
+    setUser(updated);
+    localStorage.setItem('abtalks-user-v4', JSON.stringify(updated));
   };
 
   /* ---- Use Shield to cover a missed day ---- */
@@ -194,14 +243,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   /* ---- Mark Day Complete and award badges/shields ---- */
   const markDayComplete = (day: number, github: string, linkedin: string) => {
-    const days = user.days.map((d, i) => {
+    const days = user.days.map((d) => {
       if (d.day === day) return { ...d, status: 'completed' as const, submittedAt: new Date().toISOString(), github, linkedin };
       if (d.day === day + 1 && d.status === 'future') return { ...d, status: 'today' as const };
       return d;
     });
 
     const daysCompleted = days.filter(d => d.status === 'completed' || d.status === 'completed-late').length;
-    const streak = user.streak + 1;
+    const streak = user.streak > 0 ? user.streak + 1 : Math.max(1, daysCompleted);
     const longestStreak = Math.max(user.longestStreak, streak);
 
     // Badge logic

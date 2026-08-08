@@ -88,7 +88,7 @@ export default function SignupPage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <Link href="/" className="navbar-logo" style={{ fontSize: '18px' }}>AB<span>Talks</span></Link>
-          <button className="theme-toggle-btn" onClick={toggleTheme}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>60-Day Challenge</span>
         </div>
 
         {/* Step indicators */}

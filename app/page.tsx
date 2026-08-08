@@ -89,7 +89,7 @@ function TestimonialCard({ t, index }: { t: typeof mockData.testimonials[0]; ind
   );
 }
 
-/* ---- Track card (stylish LeetCode-style) ---- */
+/* ---- Track card ---- */
 const TRACK_META = {
   SE: { icon: '⚙️', color: '#7C3AED', bg: 'rgba(124,58,237,0.10)', border: 'rgba(124,58,237,0.25)', glow: 'rgba(124,58,237,0.3)' },
   DS: { icon: '📊', color: '#0891B2', bg: 'rgba(8,145,178,0.10)',  border: 'rgba(8,145,178,0.25)',  glow: 'rgba(8,145,178,0.3)' },
@@ -117,11 +117,8 @@ function TrackCard({ track }: { track: typeof mockData.tracks[0] }) {
         position: 'relative',
       }}
     >
-      {/* Gradient accent bar */}
       <div style={{ height: '3px', background: `linear-gradient(90deg, ${m.color}, ${m.color}55)` }} />
-
       <div style={{ padding: '24px' }}>
-        {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
           <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: m.bg, border: `1px solid ${m.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px' }}>
             {m.icon}
@@ -130,18 +127,13 @@ function TrackCard({ track }: { track: typeof mockData.tracks[0] }) {
             ● {track.status === 'enrolling' ? 'Open' : 'Coming soon'}
           </span>
         </div>
-
         <h3 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', marginBottom: '8px', color: 'var(--text-primary)' }}>{track.label}</h3>
         <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--text-secondary)', marginBottom: '16px' }}>{track.description}</p>
-
-        {/* Skills pills */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '20px' }}>
           {track.skills.map(s => (
             <span key={s} style={{ fontSize: '11px', fontWeight: 600, padding: '4px 10px', borderRadius: '999px', background: m.bg, color: m.color, border: `1px solid ${m.border}` }}>{s}</span>
           ))}
         </div>
-
-        {/* Duration row */}
         <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
           {[['60', 'Days'], ['1', 'Task/day'], ['0₹', 'Cost']].map(([val, lbl]) => (
             <div key={lbl} style={{ textAlign: 'center' }}>
@@ -150,7 +142,6 @@ function TrackCard({ track }: { track: typeof mockData.tracks[0] }) {
             </div>
           ))}
         </div>
-
         <Link
           href={user.isLoggedIn ? '/dashboard' : '/signup'}
           className="btn btn-primary w-full"
@@ -163,12 +154,146 @@ function TrackCard({ track }: { track: typeof mockData.tracks[0] }) {
   );
 }
 
+/* ---- Settings Modal (auth-aware Route Map) ---- */
+function SettingsModal({ onClose }: { onClose: () => void }) {
+  const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [daysExpanded, setDaysExpanded] = useState(false);
+
+  // Days the user has completed (status = completed or completed-late)
+  const completedDays = user.isLoggedIn
+    ? user.days.filter(d => d.status === 'completed' || d.status === 'completed-late' || d.status === 'today').map(d => d.day).sort((a, b) => a - b)
+    : [];
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div className="glass-card" style={{ padding: '24px', maxWidth: '420px', width: '100%', borderRadius: '20px', background: 'var(--bg-secondary)', border: '1px solid var(--border-medium)', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+
+        <h3 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', marginBottom: '4px', color: 'var(--text-primary)' }}>⚙️ Preferences & Settings</h3>
+        <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px' }}>Theme applies globally across all pages.</p>
+
+        {/* Theme Toggle */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)', marginBottom: '12px' }}>
+          <div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>Appearance Theme</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Current: {theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}</div>
+          </div>
+          <button className="btn btn-primary btn-sm" onClick={toggleTheme}>
+            {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+          </button>
+        </div>
+
+        {/* Route Map — different for guest vs logged-in */}
+        <div style={{ padding: '12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)', marginBottom: '16px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '10px' }}>🗺️ Route Map</div>
+
+          {/* Always-visible public routes */}
+          <div style={{ marginBottom: '8px' }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '6px' }}>Public Pages</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <Link href="/" onClick={onClose} className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start', fontSize: '12px' }}>
+                🏠 <span style={{ fontFamily: 'var(--font-mono)', marginLeft: '6px' }}>/</span>&nbsp;— Home
+              </Link>
+              {!user.isLoggedIn && (
+                <>
+                  <Link href="/login" onClick={onClose} className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start', fontSize: '12px' }}>
+                    🔑 <span style={{ fontFamily: 'var(--font-mono)', marginLeft: '6px' }}>/login</span>&nbsp;— Sign In
+                  </Link>
+                  <Link href="/signup" onClick={onClose} className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start', fontSize: '12px' }}>
+                    📝 <span style={{ fontFamily: 'var(--font-mono)', marginLeft: '6px' }}>/signup</span>&nbsp;— Register
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Auth-only routes */}
+          {user.isLoggedIn ? (
+            <div>
+              <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--violet-light)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '6px' }}>Your Pages</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <Link href="/dashboard" onClick={onClose} className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start', fontSize: '12px' }}>
+                  📊 <span style={{ fontFamily: 'var(--font-mono)', marginLeft: '6px' }}>/dashboard</span>&nbsp;— Your Dashboard
+                </Link>
+
+                {/* Expandable challenge days */}
+                <button
+                  onClick={() => setDaysExpanded(p => !p)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'space-between',
+                    padding: '6px 12px', borderRadius: '10px', background: 'var(--violet-dim)',
+                    border: '1px solid rgba(124,58,237,0.25)', color: 'var(--violet-light)',
+                    fontSize: '12px', fontWeight: 600, cursor: 'pointer', width: '100%',
+                  }}
+                >
+                  <span>⚡ Challenge Days ({completedDays.length} unlocked)</span>
+                  <span style={{ fontSize: '10px', transition: 'transform 0.2s', transform: daysExpanded ? 'rotate(180deg)' : 'none' }}>▾</span>
+                </button>
+
+                {daysExpanded && (
+                  <div style={{
+                    marginLeft: '12px', marginTop: '4px',
+                    display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px',
+                    padding: '10px', borderRadius: '10px',
+                    background: 'var(--bg-card)', border: '1px solid var(--border-subtle)',
+                    maxHeight: '200px', overflowY: 'auto',
+                  }}>
+                    {completedDays.length === 0 ? (
+                      <div style={{ gridColumn: '1/-1', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', padding: '8px' }}>
+                        No days submitted yet. Start Day 1!
+                      </div>
+                    ) : (
+                      completedDays.map(day => (
+                        <Link
+                          key={day}
+                          href={`/day/${day}`}
+                          onClick={onClose}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            height: '34px', borderRadius: '8px',
+                            background: 'var(--violet-dim)', border: '1px solid rgba(124,58,237,0.25)',
+                            color: 'var(--violet-light)', fontSize: '11px', fontWeight: 700,
+                            textDecoration: 'none', transition: 'all 0.15s',
+                          }}
+                        >
+                          {day}
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Not logged in: hint to login */
+            <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)', marginTop: '8px' }}>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                🔒 Sign in to access your dashboard and challenge day routes.
+              </p>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Link href="/login" onClick={onClose} className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}>Sign In</Link>
+                <Link href="/signup" onClick={onClose} className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}>Register</Link>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <button className="btn btn-primary w-full" onClick={onClose} style={{ justifyContent: 'center' }}>
+          Done
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ---- MAIN LANDING PAGE ---- */
 export default function LandingPage() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [authWarn, setAuthWarn] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -183,11 +308,17 @@ export default function LandingPage() {
   return (
     <div style={{ maxWidth: '100%', overflowX: 'hidden' }}>
 
+      {/* Settings Modal */}
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+
       {/* ---- NAV ---- */}
       <nav className="navbar" style={{ background: scrolled ? 'var(--nav-bg)' : 'transparent', borderBottom: scrolled ? '1px solid var(--border-subtle)' : '1px solid transparent' }}>
         <div className="navbar-inner">
           <Link href="/" className="navbar-logo">AB<span>Talks</span></Link>
           <div className="navbar-actions">
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowSettings(true)} style={{ gap: '4px' }}>
+              ⚙️ Settings
+            </button>
             <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
@@ -233,6 +364,20 @@ export default function LandingPage() {
             Preview Day 1 →
           </Link>
         </div>
+
+        {/* Welcome back pill for logged-in users */}
+        {user.isLoggedIn && (
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '20px',
+            padding: '8px 16px', borderRadius: '999px',
+            background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)',
+          }}>
+            <span style={{ fontSize: '14px' }}>👋</span>
+            <span style={{ fontSize: '13px', color: 'var(--emerald)', fontWeight: 600 }}>
+              Welcome back, {user.name.split(' ')[0]}! 🔥 Streak: {user.streak} days
+            </span>
+          </div>
+        )}
       </section>
 
       {/* ---- STATS ---- */}
@@ -254,7 +399,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---- TRACKS (LeetCode Style) ---- */}
+      {/* ---- TRACKS ---- */}
       <section style={{ padding: '0 20px 60px', maxWidth: '600px', margin: '0 auto' }} id="tracks">
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <h2 style={{ fontSize: '28px', fontFamily: 'var(--font-display)', marginBottom: '8px' }}>Choose Your Track</h2>
@@ -265,14 +410,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---- TESTIMONIALS (floating glass, not horizontal scroll) ---- */}
+      {/* ---- TESTIMONIALS ---- */}
       <section style={{ padding: '0 20px 60px' }} id="testimonials">
         <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center', marginBottom: '28px' }}>
           <h2 style={{ fontSize: '28px', fontFamily: 'var(--font-display)', marginBottom: '8px' }}>What Our Builders Say</h2>
           <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Real stories from students across India</p>
         </div>
-
-        {/* Masonry-style floating layout */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -320,8 +463,6 @@ export default function LandingPage() {
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '20px', marginBottom: '20px' }}>
           AB<span className="gradient-text">Talks</span>
         </div>
-
-        {/* Social links */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '24px' }}>
           {[
             { label: '📸 Instagram', href: 'https://www.instagram.com/abtalksonai/' },
@@ -343,7 +484,6 @@ export default function LandingPage() {
             </a>
           ))}
         </div>
-
         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px' }}>
           For any issue or enquiry: <a href="mailto:team@abtalks.in" style={{ color: 'var(--violet-light)' }}>team@abtalks.in</a>
         </p>

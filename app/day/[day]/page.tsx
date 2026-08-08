@@ -219,7 +219,7 @@ function verifyLinkedIn(url: string): {ok: boolean; msg: string} {
 export default function DayPage({ params }: { params: Promise<{day: string}> }) {
   const { day: rawDay } = use(params);
   const dayNum = parseInt(rawDay, 10);
-  const { user, markDayComplete } = useAuth();
+  const { user, logout, markDayComplete } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
@@ -305,15 +305,27 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
     <div style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '80px' }}>
       {/* ---- NAV ---- */}
       <nav className="navbar">
-        <div className="navbar-inner">
+        <div className="navbar-inner" style={{ flexWrap: 'wrap', gap: '8px' }}>
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 600 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             Dashboard
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button className="theme-toggle-btn" onClick={toggleTheme}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
             <span className="badge badge-violet">Day {dayNum}/60</span>
             <span className={`badge badge-${challenge.difficulty.toLowerCase()}`}>{challenge.difficulty}</span>
+            <button
+              onClick={() => { logout(); router.push('/'); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '4px 10px', borderRadius: '8px',
+                background: 'rgba(244,63,94,0.12)', border: '1px solid rgba(244,63,94,0.3)',
+                color: '#FDA4AF', fontSize: '11px', fontWeight: 700,
+                cursor: 'pointer',
+              }}
+              title="Logout"
+            >
+              🚪 Logout
+            </button>
           </div>
         </div>
       </nav>
@@ -473,7 +485,7 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
               </p>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <input className={`input ${ghState === 'success' ? 'input-success' : ghState === 'error' ? 'input-error' : ''}`}
-                  placeholder={`https://github.com/${user.githubUsername}/abtalks-challenge`}
+                  placeholder={`https://github.com/${(user.githubUsername || '').replace(/^https?:\/\/github\.com\//i, '').replace(/^@/, '').replace(/\/$/, '') || 'username'}/abtalks-challenge`}
                   value={ghUrl} onChange={e => { setGhUrl(e.target.value); setGhState('idle'); }}
                   onKeyDown={e => e.key === 'Enter' && handleGhVerify()}
                 />
@@ -491,13 +503,13 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
               </h4>
 
               {/* Template to copy */}
-              <div style={{ background: 'var(--code-bg)', borderRadius: '10px', padding: '12px', marginBottom: '10px', position: 'relative' }}>
+              <div style={{ background: 'var(--code-bg)', border: '1px solid var(--border-medium)', borderRadius: '10px', padding: '12px', marginBottom: '10px', position: 'relative' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <span style={{ fontSize: '10px', color: 'var(--violet-light)', fontWeight: 700, textTransform: 'uppercase' }}>📋 Post Template</span>
                   <button onClick={() => navigator.clipboard.writeText(`Day ${dayNum}/60 ✅ #ABTalks SE Challenge\n\nToday I solved: ${challenge.title}\n\n🔑 Key insight: [your learning here]\n\n🔗 GitHub: [your repo link]\n\n#60DaysChallenge #ABTalks #Python #BuildInPublic`)}
                     style={{ fontSize: '10px', color: 'var(--violet-light)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Copy</button>
                 </div>
-                <pre style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: 1.6, margin: 0 }}>
+                <pre style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--text-primary)', whiteSpace: 'pre-wrap', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
 {`Day ${dayNum}/60 ✅ #ABTalks SE Challenge
 
 Today I solved: ${challenge.title}

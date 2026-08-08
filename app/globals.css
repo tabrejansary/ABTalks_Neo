@@ -86,9 +86,9 @@
   --text-muted:     #64748B;
   --text-disabled:  #94A3B8;
 
-  --code-bg:     #1E293B;
-  --code-header: #0F172A;
-  --code-text:   #F8FAFC;
+  --code-bg:     #F8FAFC;
+  --code-header: #E2E8F0;
+  --code-text:   #0F172A;
 
   --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--border-subtle);
   --shadow-hover: 0 10px 28px rgba(0,0,0,0.12), 0 0 0 1px var(--border-medium);

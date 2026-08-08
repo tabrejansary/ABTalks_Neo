@@ -4,6 +4,16 @@
 
 ---
 
+## 🗺️ Submission Route Map
+
+```
+/
+/dashboard
+/day/12
+```
+
+---
+
 ## 📌 Executive Overview
 
 ABTalks runs an intense **60-day coding challenge** targeting Indian college students. Students select a track, complete daily hands-on coding challenges, and maintain a public learning streak by submitting:

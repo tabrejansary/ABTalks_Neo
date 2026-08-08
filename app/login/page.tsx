@@ -35,23 +35,23 @@ export default function LoginPage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <Link href="/" className="navbar-logo" style={{ fontSize: '18px' }}>AB<span>Talks</span></Link>
-          <button className="theme-toggle-btn" onClick={toggleTheme}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Student Login</span>
         </div>
 
         <div className="auth-card">
           <div style={{ marginBottom: '24px' }}>
             <h1 style={{ fontSize: '22px', marginBottom: '6px' }}>Welcome back 👋</h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Sign in with your username and secret passphrase</p>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Sign in with your username, email, or secret passphrase</p>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--text-secondary)' }}>
-                Username <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(generated at signup)</span>
+                Username / Email <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(generated at signup)</span>
               </label>
               <input
                 className="input"
-                placeholder="e.g. karunuesh5847"
+                placeholder="e.g. karunuesh5847 or student@college.edu"
                 value={username}
                 onChange={e => { setUsername(e.target.value); setError(''); }}
                 autoComplete="username"
@@ -61,15 +61,14 @@ export default function LoginPage() {
 
             <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--text-secondary)' }}>
-                Secret Passphrase <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(5 words separated by dashes)</span>
+                Secret Passphrase <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(5 tokens with numbers)</span>
               </label>
               <input
                 className="input"
-                placeholder="e.g. amber-blaze-cedar-drift-ember"
+                placeholder="e.g. amber-842-blaze-99-cedar"
                 value={passphrase}
                 onChange={e => { setPassphrase(e.target.value); setError(''); }}
                 autoComplete="current-password"
-                required
               />
             </div>
 
@@ -91,8 +90,8 @@ export default function LoginPage() {
 
           {/* Hint box */}
           <div style={{ marginTop: '16px', background: 'var(--amber-dim)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px', padding: '12px 14px', fontSize: '12px', lineHeight: 1.6, color: 'var(--amber)' }}>
-            💡 Your passphrase was shown at signup in the format:<br />
-            <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>word-word-word-word-word</code>
+            💡 Your secret passphrase format:<br />
+            <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>word-number-word-number-word</code> (e.g. <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>amber-842-blaze-99-cedar</code>)
           </div>
         </div>
       </div>

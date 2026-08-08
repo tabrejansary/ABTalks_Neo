@@ -95,6 +95,188 @@ function Toast({ msg }: { msg: string }) {
   return <div className="toast">{msg}</div>;
 }
 
+/* ---- Challenge Countdown Timer ---- */
+function ChallengeCountdown() {
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0, total: 0 });
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0); // next midnight
+      const diff = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
+      setTimeLeft({
+        h: Math.floor(diff / 3600),
+        m: Math.floor((diff % 3600) / 60),
+        s: diff % 60,
+        total: diff,
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const pct = timeLeft.total / (24 * 3600); // fraction of day remaining
+  const color = pct > 0.25 ? 'var(--emerald)' : pct > 0.1 ? 'var(--amber)' : 'var(--rose)';
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '10px 14px', borderRadius: '12px', marginBottom: '14px',
+      background: 'var(--bg-card)', border: `1px solid ${color}44`,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '16px' }}>⏰</span>
+        <div>
+          <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Next challenge unlocks in</div>
+          <div style={{ fontSize: '18px', fontWeight: 800, fontFamily: 'var(--font-display)', color, letterSpacing: '0.05em', lineHeight: 1.2 }}>
+            {pad(timeLeft.h)}<span style={{ fontSize: '12px', opacity: 0.7 }}>h </span>
+            {pad(timeLeft.m)}<span style={{ fontSize: '12px', opacity: 0.7 }}>m </span>
+            {pad(timeLeft.s)}<span style={{ fontSize: '12px', opacity: 0.7 }}>s</span>
+          </div>
+        </div>
+      </div>
+      {/* Mini progress bar */}
+      <div style={{ width: '60px' }}>
+        <div style={{ height: '4px', borderRadius: '2px', background: 'var(--border-subtle)', overflow: 'hidden' }}>
+          <div style={{ height: '100%', borderRadius: '2px', background: color, width: `${pct * 100}%`, transition: 'width 1s linear, background 1s' }} />
+        </div>
+        <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px', textAlign: 'right' }}>midnight</div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Profile Modal ---- */
+function ProfileModal({
+  user,
+  theme,
+  toggleTheme,
+  onLogout,
+  onClose,
+  showToast,
+  currentDay,
+}: {
+  user: any;
+  theme: string;
+  toggleTheme: () => void;
+  onLogout: () => void;
+  onClose: () => void;
+  showToast: (msg: string) => void;
+  currentDay: number;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copyPass = () => {
+    navigator.clipboard.writeText(user.passphrase);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    showToast('📋 Passphrase copied to clipboard!');
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div className="glass-card" style={{ padding: '24px', maxWidth: '420px', width: '100%', borderRadius: '20px', background: 'var(--bg-secondary)', border: '1px solid var(--border-medium)', position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+
+        {/* Profile Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+          <div style={{
+            width: '52px', height: '52px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--violet), var(--cyan))',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 800, fontSize: '22px', color: '#fff', fontFamily: 'var(--font-display)',
+            boxShadow: '0 4px 12px rgba(124,58,237,0.3)',
+          }}>
+            {user.name ? user.name[0].toUpperCase() : 'K'}
+          </div>
+          <div>
+            <h3 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{user.name || 'Student User'}</h3>
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{user.email}</p>
+            <span style={{ fontSize: '11px', color: 'var(--violet-light)', fontWeight: 600 }}>@{user.username}</span>
+          </div>
+        </div>
+
+        {/* Info Grid */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+          {/* Track Selector */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Active Track</span>
+            <select
+              value={user.track}
+              onChange={e => {
+                const newTrack = e.target.value;
+                user.track = newTrack;
+                localStorage.setItem('abtalks-user-v4', JSON.stringify({ ...user, track: newTrack }));
+                window.location.reload();
+              }}
+              style={{
+                background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)',
+                borderRadius: '8px', padding: '4px 8px', color: 'var(--emerald)',
+                fontSize: '11px', fontWeight: 700, outline: 'none', cursor: 'pointer',
+              }}
+            >
+              <option value="SE" style={{ background: '#0F172A', color: '#fff' }}>⚙️ Software Engineering</option>
+              <option value="DS" style={{ background: '#0F172A', color: '#fff' }}>📊 Data Science</option>
+              <option value="AI" style={{ background: '#0F172A', color: '#fff' }}>🤖 AI Engineering</option>
+            </select>
+          </div>
+
+          {/* GitHub Handle */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>GitHub</span>
+            <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{user.githubUsername || 'Not connected'}</span>
+          </div>
+
+          {/* Secret Passphrase */}
+          <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>Secret Passphrase</span>
+              <button onClick={copyPass} style={{ background: 'none', border: 'none', color: 'var(--violet-light)', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
+                {copied ? '✓ Copied' : 'Copy'}
+              </button>
+            </div>
+            <div style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: 'var(--amber)', fontWeight: 600, wordBreak: 'break-all' }}>
+              {user.passphrase || 'amber-842-blaze-99-cedar'}
+            </div>
+          </div>
+
+          {/* Preferences / Theme */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Theme Mode</span>
+            <button className="btn btn-secondary btn-sm" onClick={toggleTheme} style={{ gap: '6px' }}>
+              {theme === 'dark' ? '☀️ Switch to Light' : '🌙 Switch to Dark'}
+            </button>
+          </div>
+
+          {/* Route Map Quick Access */}
+          <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px' }}>Route Map Links</div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Link href="/" onClick={onClose} className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}>/ Home</Link>
+              <Link href="/dashboard" onClick={onClose} className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}>/dashboard</Link>
+              <Link href={`/day/${currentDay}`} onClick={onClose} className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '11px' }}>/day/{currentDay}</Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Logout Button */}
+        <button
+          className="btn w-full"
+          onClick={onLogout}
+          style={{
+            background: 'rgba(244,63,94,0.15)', border: '1px solid rgba(244,63,94,0.3)',
+            color: '#FDA4AF', fontWeight: 700, justifyContent: 'center', borderRadius: '12px', padding: '12px',
+          }}
+        >
+          🚪 Logout from Account
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ---- Main Dashboard ---- */
 export default function Dashboard() {
   const { user, logout, useShield } = useAuth();
@@ -103,6 +285,7 @@ export default function Dashboard() {
 
   const [showTour, setShowTour] = useState(false);
   const [showShieldModal, setShowShieldModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [toast, setToast] = useState('');
   const [activeNav, setActiveNav] = useState('home');
 
@@ -150,44 +333,94 @@ export default function Dashboard() {
     }
   };
 
-  const trackLabels: Record<string, string> = { SE: 'Software Engineering', DS: 'Data Science', AI: 'AI Engineering' };
-
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '80px' }}>
       {showTour && <Tour onDone={finishTour} />}
       {showShieldModal && <ShieldModal missedDays={missedDays.length > 0 ? missedDays : [user.currentDay - 1]} onUse={handleUseShield} onClose={() => setShowShieldModal(false)} />}
+      {showProfileModal && (
+        <ProfileModal
+          user={user}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          onLogout={handleLogout}
+          onClose={() => setShowProfileModal(false)}
+          showToast={showToast}
+          currentDay={taskDay}
+        />
+      )}
       {toast && <Toast msg={toast} />}
 
-      {/* ---- NAV ---- */}
-      <nav className="navbar">
+      {/* ---- CLEAN ABTALKS NAVBAR ---- */}
+      <nav className="navbar" style={{ padding: '10px 16px' }}>
         <div className="navbar-inner">
-          <Link href="/" className="navbar-logo">AB<span>Talks</span></Link>
-          <div className="navbar-actions">
-            <button className="theme-toggle-btn" onClick={toggleTheme}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+          <Link href="/" className="navbar-logo" style={{ fontSize: '18px', fontWeight: 800 }}>
+            AB<span>TALKS</span>
+          </Link>
+
+          <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+            {/* Jobs Pill */}
+            <button
+              onClick={() => showToast('💼 Jobs Board: 45+ recruiters hiring challenge finishers!')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '6px 12px', borderRadius: '20px',
+                border: '1px solid var(--border-subtle)', background: 'var(--bg-card)',
+                fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer',
+              }}
+            >
+              💼 Jobs
+            </button>
+
+            {/* Likes / Points Pill */}
+            <div
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '6px 12px', borderRadius: '20px',
+                border: '1px solid rgba(124,58,237,0.3)', background: 'rgba(124,58,237,0.1)',
+                fontSize: '11px', fontWeight: 700, color: 'var(--violet-light)',
+              }}
+            >
+              👍 {user.daysCompleted * 10}
+            </div>
+
+            {/* Streak Shields Pill */}
             {user.streakShields > 0 && (
               <button
                 className="streak-shield"
                 onClick={() => setShowShieldModal(true)}
                 title="Use streak shield"
+                style={{ padding: '6px 10px', fontSize: '11px' }}
               >
                 🛡️ {user.streakShields}
               </button>
             )}
-            {/* Avatar + logout */}
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={handleLogout}
+
+            {/* CLEAN PROFILE TAB BUTTON */}
+            <button
+              onClick={() => setShowProfileModal(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '4px 12px 4px 4px', borderRadius: '24px',
+                background: 'var(--bg-card)', border: '1px solid var(--border-medium)',
+                cursor: 'pointer', transition: 'all 0.2s',
+              }}
+              title="Open Profile & Settings"
+            >
+              <div
                 style={{
-                  width: '34px', height: '34px', borderRadius: '50%', border: '2px solid var(--violet)',
+                  width: '28px', height: '28px', borderRadius: '50%',
                   background: 'linear-gradient(135deg, var(--violet), var(--cyan))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 700, fontSize: '13px', color: '#fff', cursor: 'pointer',
+                  fontWeight: 800, fontSize: '12px', color: '#fff',
                 }}
-                title="Logout"
               >
-                {user.name ? user.name[0].toUpperCase() : 'U'}
-              </button>
-            </div>
+                {user.name ? user.name[0].toUpperCase() : 'K'}
+              </div>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {user.name ? user.name.split(' ')[0] : 'Profile'}
+              </span>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>▾</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -309,6 +542,8 @@ export default function Dashboard() {
           <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--text-secondary)', marginBottom: '16px' }}>
             Build a command-line task management app with CRUD operations, persisted to a JSON file.
           </p>
+          {/* ---- COUNTDOWN TIMER ---- */}
+          <ChallengeCountdown />
           <Link href={`/day/${taskDay}`} className="btn btn-primary w-full" style={{ justifyContent: 'center', textDecoration: 'none' }}>
             ⚡ Start Day {taskDay} Challenge →
           </Link>
