@@ -353,49 +353,52 @@ function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) 
     : monthGroups.filter(g => g.monthName === selectedMonth);
 
   return (
-    <div id="progress-map" className="glass-card" style={{ padding: '20px', marginBottom: '14px', position: 'relative' }}>
-      {/* Section Header & Month Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CalendarIcon size={18} color="var(--violet-light)" />
-            <h3 style={{ fontSize: '15px', fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
-              60-Day Progress Matrix
-            </h3>
-          </div>
-          <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-            Batch 4 &middot; Aug 8 &ndash; Oct 6, 2026
-          </p>
+    <div id="progress-map" className="glass-card matrix-card" style={{ padding: '20px', marginBottom: '14px', position: 'relative', width: '100%', boxSizing: 'border-box' }}>
+      {/* Section Header */}
+      <div style={{ marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+          <CalendarIcon size={18} color="var(--violet-light)" />
+          <h3 style={{ fontSize: '15px', fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+            60-Day Progress Matrix
+          </h3>
         </div>
+        <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+          Batch 4 &middot; Aug 8 &ndash; Oct 6, 2026
+        </p>
+      </div>
 
-        {/* Month Filter Tabs */}
-        <div style={{ display: 'flex', gap: '3px', background: 'var(--input-bg)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border-subtle)', flexWrap: 'wrap' }}>
-          {(['ALL', 'AUG', 'SEP', 'OCT'] as const).map(m => (
-            <button
-              key={m}
-              onClick={() => setSelectedMonth(m)}
-              style={{
-                padding: '4px 10px', borderRadius: '7px', fontSize: '11px', fontWeight: 600,
-                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                background: selectedMonth === m ? 'var(--violet)' : 'transparent',
-                color: selectedMonth === m ? '#fff' : 'var(--text-muted)',
-              }}
-            >
-              {m === 'ALL' ? '60-Day Grid' : m}
-            </button>
-          ))}
-        </div>
+      {/* Month Filter Tabs (Responsive Grid) */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px',
+        background: 'var(--input-bg)', padding: '3px', borderRadius: '10px',
+        border: '1px solid var(--border-subtle)', marginBottom: '14px', width: '100%', boxSizing: 'border-box'
+      }}>
+        {(['ALL', 'AUG', 'SEP', 'OCT'] as const).map(m => (
+          <button
+            key={m}
+            onClick={() => setSelectedMonth(m)}
+            style={{
+              padding: '6px 4px', borderRadius: '7px', fontSize: '11px', fontWeight: 600,
+              border: 'none', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center',
+              background: selectedMonth === m ? 'var(--violet)' : 'transparent',
+              color: selectedMonth === m ? '#fff' : 'var(--text-muted)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}
+          >
+            {m === 'ALL' ? '60-Day Grid' : m}
+          </button>
+        ))}
       </div>
 
       {/* Hover Info Banner */}
       <div style={{
         minHeight: '36px', padding: '8px 12px', borderRadius: '10px',
         background: 'var(--input-bg)', border: '1px solid var(--border-subtle)',
-        marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        fontSize: '12px',
+        marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        fontSize: '12px', flexWrap: 'wrap', gap: '6px', width: '100%', boxSizing: 'border-box'
       }}>
         {hoveredDay ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Day {hoveredDay.day}</span>
               <span style={{ color: 'var(--text-muted)' }}>&middot;</span>
@@ -412,14 +415,14 @@ function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) 
         )}
       </div>
 
-      {/* Month Heatmap View (Fluid 100% width - No Scrollbar) */}
-      <div className="no-scrollbar" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Month Heatmap View (Fluid 100% width - Fits All Screens) */}
+      <div className="no-scrollbar" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '14px', boxSizing: 'border-box' }}>
         {visibleGroups.map(group => (
-          <div key={group.monthName}>
+          <div key={group.monthName} style={{ width: '100%' }}>
             {/* Month Header */}
             <div style={{
               fontSize: '11px', fontWeight: 800, fontFamily: 'var(--font-display)',
-              color: 'var(--violet-light)', letterSpacing: '0.08em', marginBottom: '8px',
+              color: 'var(--violet-light)', letterSpacing: '0.08em', marginBottom: '6px',
               borderBottom: '1px solid var(--border-subtle)', paddingBottom: '4px',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}>
@@ -427,8 +430,8 @@ function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) 
               <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>{group.days.length} Days</span>
             </div>
 
-            {/* Calendar Grid for Month (7 columns per week) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', width: '100%' }}>
+            {/* Calendar Grid for Month (7 columns per week, fluid scaling) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', width: '100%', boxSizing: 'border-box' }}>
               {group.days.map(d => (
                 <Link
                   key={d.day}
@@ -436,10 +439,8 @@ function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) 
                   onMouseEnter={() => setHoveredDay(d)}
                   onMouseLeave={() => setHoveredDay(null)}
                   className={`day-tile ${tileClass(d.status)}`}
-                  style={{ height: '36px' }}
                 >
-                  <span style={{ fontSize: '11px' }}>{d.dateInfo.dayNum}</span>
-                  <span style={{ fontSize: '8px', opacity: 0.6, fontWeight: 500 }}>D{d.day}</span>
+                  <span style={{ fontSize: '11px', lineHeight: 1 }}>{d.dateInfo.dayNum}</span>
                 </Link>
               ))}
             </div>
@@ -448,8 +449,8 @@ function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) 
       </div>
 
       {/* Legend Footer */}
-      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           {[
             ['var(--emerald)', 'Completed'],
             ['var(--amber)', 'Late'],
@@ -457,17 +458,18 @@ function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) 
             ['var(--violet)', 'Today'],
             ['var(--border-subtle)', 'Upcoming'],
           ].map(([c, l]) => (
-            <div key={l} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: c, flexShrink: 0 }} />
+            <div key={l} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ width: '9px', height: '9px', borderRadius: '3px', background: c, flexShrink: 0 }} />
               <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>{l}</span>
             </div>
           ))}
         </div>
-        <span style={{ fontSize: '10px', color: 'var(--text-disabled)', fontFamily: 'var(--font-mono)' }}>ABTalks Verification Engine</span>
+        <span style={{ fontSize: '9px', color: 'var(--text-disabled)', fontFamily: 'var(--font-mono)' }}>ABTalks Verification Engine</span>
       </div>
     </div>
   );
 }
+
 
 
 /* ---- Main Dashboard ---- */

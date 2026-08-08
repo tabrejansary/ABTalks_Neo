@@ -296,6 +296,7 @@ code, pre { font-family: var(--font-mono); }
   grid-template-columns: repeat(10, 1fr);
   gap: 6px;
   width: 100%;
+  box-sizing: border-box;
 }
 .day-tile {
   aspect-ratio: 1; border-radius: 8px; cursor: pointer;
@@ -311,6 +312,8 @@ code, pre { font-family: var(--font-mono); }
   color: var(--text-muted);
   text-decoration: none;
   border: 1px solid transparent;
+  box-sizing: border-box;
+  min-width: 0;
 }
 .day-tile:hover { transform: translateY(-2px) scale(1.08); z-index: 5; }
 
@@ -328,12 +331,13 @@ code, pre { font-family: var(--font-mono); }
 
 /* ---- Mobile Responsiveness Adjustments ---- */
 @media (max-width: 600px) {
-  .dashboard-container { padding: 12px !important; }
+  .dashboard-container { padding: 10px !important; }
   .stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-  .day-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 5px !important; }
-  .day-tile { font-size: 9px; border-radius: 6px; }
+  .day-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 4px !important; }
+  .day-tile { font-size: 10px; border-radius: 6px; }
   .streak-hero-inner { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
   .streak-progress-ring { align-self: center; margin-top: 8px; }
+  .matrix-card { padding: 14px 12px !important; }
 }
 
 
