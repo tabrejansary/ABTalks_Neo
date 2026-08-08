@@ -518,7 +518,7 @@ export default function Dashboard() {
   const taskDay = currentTask?.day ?? user.currentDay;
 
   return (
-    <div className="dashboard-container" style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '80px' }}>
+    <div style={{ minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', background: 'var(--bg-primary)', paddingBottom: '80px' }}>
       {showTour && <Tour onDone={finishTour} />}
       {showShieldModal && <ShieldModal missedDays={missedDays.length > 0 ? missedDays : [user.currentDay - 1]} onUse={handleUseShield} onClose={() => setShowShieldModal(false)} />}
       {showProfileModal && (
@@ -542,9 +542,10 @@ export default function Dashboard() {
           </Link>
 
           <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-            {/* Jobs Pill */}
+            {/* Jobs Pill — hide on smallest phones */}
             <button
               onClick={() => showToast('Jobs Board: 45+ recruiters hiring challenge finishers!')}
+              className="nav-hide-mobile"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '6px 12px', borderRadius: '20px',
@@ -555,8 +556,9 @@ export default function Dashboard() {
               <BriefcaseIcon size={12} color="var(--violet-light)" /> Jobs
             </button>
 
-            {/* Likes / Points Pill */}
+            {/* Likes / Points Pill — hide on mobile */}
             <div
+              className="nav-hide-mobile"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '6px 12px', borderRadius: '20px',
@@ -609,7 +611,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div style={{ padding: '16px' }}>
+      <div className="dashboard-container" style={{ maxWidth: '600px', margin: '0 auto', padding: '16px', width: '100%', boxSizing: 'border-box' }}>
 
         {/* ---- Welcome header ---- */}
         <div style={{ marginBottom: '18px' }}>

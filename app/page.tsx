@@ -353,7 +353,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div style={{ maxWidth: '100%', overflowX: 'hidden' }}>
+    <div style={{ width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
 
       {/* Settings Modal */}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
@@ -363,21 +363,22 @@ export default function LandingPage() {
         <div className="navbar-inner">
           <Link href="/" className="navbar-logo">AB<span>Talks</span></Link>
           <div className="navbar-actions">
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowSettings(true)} style={{ gap: '6px' }}>
-              <SettingsIcon size={14} /> Settings
+            {/* Settings icon-only on mobile */}
+            <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">
+              <SettingsIcon size={16} />
             </button>
             <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
               {theme === 'dark' ? <SunIcon size={16} color="var(--amber)" /> : <MoonIcon size={16} color="var(--violet-light)" />}
             </button>
             {user.isLoggedIn ? (
-              <Link href="/dashboard" className="btn btn-primary btn-sm" style={{ gap: '6px' }}>
-                Dashboard <ArrowRightIcon size={14} />
+              <Link href="/dashboard" className="btn btn-primary btn-sm" style={{ gap: '4px' }}>
+                Dashboard <ArrowRightIcon size={12} />
               </Link>
             ) : (
               <>
                 <Link href="/login" className="btn btn-ghost btn-sm">Sign in</Link>
-                <Link href="/signup" className="btn btn-primary btn-sm" style={{ gap: '6px' }}>
-                  Enroll Free <ArrowRightIcon size={14} />
+                <Link href="/signup" className="btn btn-primary btn-sm" style={{ gap: '4px' }}>
+                  Enroll <ArrowRightIcon size={12} />
                 </Link>
               </>
             )}
@@ -386,33 +387,34 @@ export default function LandingPage() {
       </nav>
 
       {/* ---- HERO ---- */}
-      <section style={{ padding: '70px 20px 50px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--violet-dim)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '999px', padding: '6px 14px', marginBottom: '28px' }}>
-          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--violet-light)', animation: 'streak-fire 2s ease-in-out infinite' }} />
-          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--violet-light)' }}>Now enrolling &middot; Batch 4 &middot; 10,000+ builders</span>
+      <section style={{ padding: '70px 16px 50px', textAlign: 'center', maxWidth: '600px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--violet-dim)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '999px', padding: '5px 12px', marginBottom: '24px' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--violet-light)', animation: 'streak-fire 2s ease-in-out infinite', flexShrink: 0 }} />
+          <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--violet-light)' }}>Now enrolling &middot; Batch 4 &middot; 10,000+ builders</span>
         </div>
 
-        <h1 style={{ fontSize: 'clamp(36px, 8vw, 60px)', fontFamily: 'var(--font-display)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: '20px' }}>
+        <h1 style={{ fontSize: 'clamp(30px, 8vw, 60px)', fontFamily: 'var(--font-display)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '16px' }}>
           Code daily.<br />Ship publicly.<br />
           <Typewriter texts={['Get noticed.', 'Get hired.', 'Build consistency.', 'Prove your skills.']} />
         </h1>
 
-        <p style={{ fontSize: '16px', color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.65 }}>
-          India&apos;s 60-day coding challenge for college students. One real challenge every day. Cross-verify GitHub commits and LinkedIn posts. Build proof of work.
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 24px', lineHeight: 1.65 }}>
+          India&apos;s 60-day coding challenge. One real challenge every day. Cross-verify GitHub commits and LinkedIn posts. Build proof of work.
         </p>
 
         {authWarn && (
-          <div style={{ background: 'var(--rose-dim)', border: '1px solid rgba(244,63,94,0.3)', color: 'var(--rose)', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '16px', animation: 'fade-in-up 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <LockIcon size={16} color="var(--rose)" /> Please enroll or sign in first to preview challenge days.
+          <div style={{ background: 'var(--rose-dim)', border: '1px solid rgba(244,63,94,0.3)', color: 'var(--rose)', padding: '10px 14px', borderRadius: '12px', fontSize: '12px', marginBottom: '16px', animation: 'fade-in-up 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <LockIcon size={14} color="var(--rose)" /> Please enroll or sign in first to preview challenge days.
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href={user.isLoggedIn ? '/dashboard' : '/signup'} className="btn btn-primary btn-lg" style={{ gap: '8px' }}>
-            <RocketIcon size={18} /> {user.isLoggedIn ? 'Open Dashboard' : 'Start Challenge — Free'}
+        {/* Hero buttons — stack on phone */}
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', width: '100%' }}>
+          <Link href={user.isLoggedIn ? '/dashboard' : '/signup'} className="btn btn-primary btn-lg" style={{ gap: '6px', flex: '1 1 200px', justifyContent: 'center', maxWidth: '280px' }}>
+            <RocketIcon size={16} /> {user.isLoggedIn ? 'Open Dashboard' : 'Start Challenge — Free'}
           </Link>
-          <Link href="/day/1" onClick={guardPreview} className="btn btn-secondary btn-lg" style={{ gap: '8px' }}>
-            Preview Day 1 <ArrowRightIcon size={16} />
+          <Link href="/day/1" onClick={guardPreview} className="btn btn-secondary btn-lg" style={{ gap: '6px', flex: '1 1 160px', justifyContent: 'center', maxWidth: '200px' }}>
+            Preview Day 1 <ArrowRightIcon size={14} />
           </Link>
         </div>
 
