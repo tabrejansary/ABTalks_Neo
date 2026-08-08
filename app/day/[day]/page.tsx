@@ -1,9 +1,27 @@
 'use client';
-import { useState, useCallback, use } from 'react';
+import React, { useState, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import {
+  FileTextIcon,
+  TerminalIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ClockIcon,
+  GithubIcon,
+  LinkedinIcon,
+  RocketIcon,
+  LogOutIcon,
+  CopyIcon,
+  ArrowRightIcon,
+  HomeIcon,
+  ZapIcon,
+  CheckIcon,
+  PartyPopperIcon,
+  FlameIcon,
+} from '@/app/icons';
 
 /* ---- Challenge definitions (Day 1-based) ---- */
 const CHALLENGES: Record<number, {
@@ -39,22 +57,22 @@ const CHALLENGES: Record<number, {
       const hasReturn   = code.includes('return');
       const hasHashmap  = code.includes('{}') || code.includes('dict()') || code.includes('seen') || code.includes('complement');
       const isUnchanged = code.includes('pass') && !code.includes('return');
-      if (isUnchanged) return { passed: [false,false,false], feedback: '❌ Solution is empty. Implement the twoSum method.' };
-      if (hasReturn && hasHashmap) return { passed: [true,true,true], feedback: `✅ All 3 test cases passed!
+      if (isUnchanged) return { passed: [false,false,false], feedback: 'Error: Solution is empty. Implement the twoSum method.' };
+      if (hasReturn && hasHashmap) return { passed: [true,true,true], feedback: `All 3 test cases passed!
   
-  TC1: twoSum([2,7,11,15], 9) → [0, 1]  ✓
-  TC2: twoSum([3,2,4], 6)    → [1, 2]  ✓
-  TC3: twoSum([3,3], 6)      → [0, 1]  ✓
+  TC1: twoSum([2,7,11,15], 9) → [0, 1]  (Passed)
+  TC2: twoSum([3,2,4], 6)    → [1, 2]  (Passed)
+  TC3: twoSum([3,3], 6)      → [0, 1]  (Passed)
   
   Runtime: 52ms  Memory: 14.8MB  Beats 87%` };
-      if (hasReturn && !hasHashmap) return { passed: [true,false,false], feedback: `⚠️ Partial — O(n²) brute force detected.
+      if (hasReturn && !hasHashmap) return { passed: [true,false,false], feedback: `Partial: O(n²) brute force detected.
   
-  TC1: twoSum([2,7,11,15], 9) → [0, 1]  ✓
-  TC2: twoSum([3,2,4], 6)    → TLE ❌  (Too Slow for large input)
-  TC3: twoSum([3,3], 6)      → TLE ❌
+  TC1: twoSum([2,7,11,15], 9) → [0, 1]  (Passed)
+  TC2: twoSum([3,2,4], 6)    → TLE (Too Slow for large input)
+  TC3: twoSum([3,3], 6)      → TLE
   
   Use a hashmap for O(n) time complexity.` };
-      return { passed: [false,false,false], feedback: '❌ Function does not return any value. Add a return statement.' };
+      return { passed: [false,false,false], feedback: 'Error: Function does not return any value. Add a return statement.' };
     },
   },
   2: {
@@ -77,15 +95,15 @@ const CHALLENGES: Record<number, {
       const hasStack  = code.includes('stack') || code.includes('append') || code.includes('pop');
       const hasReturn = code.includes('return');
       const isBlank   = code.includes('pass') && !hasReturn;
-      if (isBlank) return { passed: [false,false,false], feedback: '❌ Solution is empty. Implement isValid().' };
-      if (hasReturn && hasStack) return { passed: [true,true,true], feedback: `✅ All 3 test cases passed!
+      if (isBlank) return { passed: [false,false,false], feedback: 'Error: Solution is empty. Implement isValid().' };
+      if (hasReturn && hasStack) return { passed: [true,true,true], feedback: `All 3 test cases passed!
   
-  TC1: "()"      → True  ✓
-  TC2: "()[]{}"  → True  ✓
-  TC3: "(]"      → False ✓
+  TC1: "()"      → True  (Passed)
+  TC2: "()[]{}"  → True  (Passed)
+  TC3: "(]"      → False (Passed)
   
   Runtime: 35ms  Memory: 13.9MB  Beats 91%` };
-      return { passed: [false,false,false], feedback: '❌ Use a stack (list with .append() and .pop()) to solve this.' };
+      return { passed: [false,false,false], feedback: 'Error: Use a stack (list with .append() and .pop()) to solve this.' };
     },
   },
   12: {
@@ -100,9 +118,9 @@ const CHALLENGES: Record<number, {
       'CLI interface using sys.argv or argparse',
     ],
     examples: [
-      { input: 'python task_manager.py add "Buy groceries"', output: '✅ Added task [a1b2c3d4]: Buy groceries' },
+      { input: 'python task_manager.py add "Buy groceries"', output: 'Added task [a1b2c3d4]: Buy groceries' },
       { input: 'python task_manager.py list', output: '[a1b2c3d4] ○ Buy groceries (pending)' },
-      { input: 'python task_manager.py done a1b2c3d4', output: '✅ Task marked complete' },
+      { input: 'python task_manager.py done a1b2c3d4', output: 'Task marked complete' },
     ],
     starterCode: `import json
 import uuid
@@ -155,14 +173,14 @@ if __name__ == '__main__':
       const hasSave     = code.includes('save_tasks') && code.includes('json.dump');
       const passed = [hasAdd, hasList, hasComplete && hasSave];
       const count = passed.filter(Boolean).length;
-      if (count === 3) return { passed, feedback: `✅ All 3 test cases passed! Great CLI tool!
+      if (count === 3) return { passed, feedback: `All 3 test cases passed! Great CLI tool!
   
-  TC1: add_task() creates valid task      ✓
-  TC2: list_tasks() prints all tasks      ✓
-  TC3: complete_task() updates status     ✓
+  TC1: add_task() creates valid task      (Passed)
+  TC2: list_tasks() prints all tasks      (Passed)
+  TC3: complete_task() updates status     (Passed)
   
   Well done! Push to GitHub and post on LinkedIn.` };
-      return { passed, feedback: `${count}/3 tests passing. Implement the TODO functions.\n${!hasAdd ? '❌ add_task(): append task dict to list and save\n' : '✓ add_task()\n'}${!hasList ? '❌ list_tasks(): loop and print each task\n' : '✓ list_tasks()\n'}${!passed[2] ? '❌ complete_task(): find task by id, set status="done", save' : '✓ complete_task()'}` };
+      return { passed, feedback: `${count}/3 tests passing. Implement the TODO functions.\n${!hasAdd ? 'add_task(): append task dict to list and save\n' : 'add_task()\n'}${!hasList ? 'list_tasks(): loop and print each task\n' : 'list_tasks()\n'}${!passed[2] ? 'complete_task(): find task by id, set status="done", save' : 'complete_task()'}` };
     },
   },
 };
@@ -202,7 +220,7 @@ async function verifyGitHub(url: string, registeredUser: string): Promise<{ok: b
     const readmeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`, { headers: { Accept: 'application/vnd.github.v3+json' } });
     if (readmeRes.status === 404) return { ok: false, msg: `README.md missing in "${owner}/${repo}". Add one documenting your solution.` };
     const handleNote = owner.toLowerCase() !== registeredUser.toLowerCase() ? ` (Note: repo by @${owner}, registered as @${registeredUser})` : '';
-    return { ok: true, msg: `✓ Repo found with README.md!${handleNote}` };
+    return { ok: true, msg: `Repo found with README.md!${handleNote}` };
   } catch { return { ok: false, msg: 'Network error while reaching GitHub API.' }; }
 }
 
@@ -211,8 +229,8 @@ function verifyLinkedIn(url: string): {ok: boolean; msg: string} {
   if (!url) return { ok: false, msg: 'Enter your LinkedIn post URL.' };
   if (!url.includes('linkedin.com')) return { ok: false, msg: 'Not a LinkedIn URL.' };
   const isPost = url.includes('/posts/') || url.includes('/feed/update/') || url.includes('/activity-') || url.includes('ugcPost');
-  if (!isPost) return { ok: false, msg: 'Please paste the direct post link (click "···" on your LinkedIn post → "Copy link to post").' };
-  return { ok: true, msg: '✓ LinkedIn post URL verified! Include #ABTalks #60DaysChallenge in your post for visibility.' };
+  if (!isPost) return { ok: false, msg: 'Please paste the direct post link (click "..." on your LinkedIn post -> "Copy link to post").' };
+  return { ok: true, msg: 'LinkedIn post URL verified! Include #ABTalks #60DaysChallenge in your post for visibility.' };
 }
 
 /* ---- Day Challenge Page ---- */
@@ -286,20 +304,20 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
         <div style={{ textAlign: 'center', maxWidth: '360px' }}>
-          <div style={{ fontSize: '72px', marginBottom: '16px' }}>🎉</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+            <PartyPopperIcon size={56} color="var(--violet-light)" />
+          </div>
           <h1 style={{ fontSize: '26px', fontFamily: 'var(--font-display)', marginBottom: '8px' }}>Day {dayNum} Complete!</h1>
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.7 }}>
-            Your streak is alive! 🔥 Proof verified and recorded.
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.7, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            Your streak is alive! <FlameIcon size={16} color="var(--amber)" /> Proof verified and recorded.
           </p>
           <Link href="/dashboard" className="btn btn-primary btn-lg" style={{ justifyContent: 'center', textDecoration: 'none' }}>
-            ← Back to Dashboard
+            &larr; Back to Dashboard
           </Link>
         </div>
       </div>
     );
   }
-
-  const tcLabels = challenge.examples.map(ex => ex.input.slice(0, 30) + (ex.input.length > 30 ? '…' : ''));
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '80px' }}>
@@ -324,7 +342,7 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
               }}
               title="Logout"
             >
-              🚪 Logout
+              <LogOutIcon size={12} color="#FDA4AF" /> Logout
             </button>
           </div>
         </div>
@@ -340,10 +358,14 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
 
         {/* ---- Main Tabs ---- */}
         <div className="tabs" style={{ marginBottom: '18px' }}>
-          <button className={`tab ${tab==='problem' ? 'active' : ''}`} onClick={() => setTab('problem')}>📖 Problem</button>
-          <button className={`tab ${tab==='code' ? 'active' : ''}`} onClick={() => setTab('code')}>💻 Playground</button>
-          <button className={`tab ${tab==='submit' ? 'active' : ''}`} onClick={() => setTab('submit')}>
-            ✅ Submit{ghState==='success' && liState==='success' ? ' ●' : ''}
+          <button className={`tab ${tab==='problem' ? 'active' : ''}`} onClick={() => setTab('problem')} style={{ gap: '6px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FileTextIcon size={14} /> Problem
+          </button>
+          <button className={`tab ${tab==='code' ? 'active' : ''}`} onClick={() => setTab('code')} style={{ gap: '6px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TerminalIcon size={14} /> Playground
+          </button>
+          <button className={`tab ${tab==='submit' ? 'active' : ''}`} onClick={() => setTab('submit')} style={{ gap: '6px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CheckCircleIcon size={14} /> Submit{ghState==='success' && liState==='success' ? ' ●' : ''}
           </button>
         </div>
 
@@ -374,8 +396,8 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
               </ul>
             </div>
 
-            <button className="btn btn-primary w-full" onClick={() => setTab('code')} style={{ justifyContent: 'center' }}>
-              Open Playground →
+            <button className="btn btn-primary w-full" onClick={() => setTab('code')} style={{ justifyContent: 'center', gap: '6px' }}>
+              Open Playground <ArrowRightIcon size={14} />
             </button>
           </div>
         )}
@@ -414,10 +436,10 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
             </div>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-              <button className="btn btn-primary" onClick={runCode} disabled={running} style={{ flex: 1, justifyContent: 'center' }}>
-                {running ? <><div className="spinner" /> Running...</> : '▶ Run & Test'}
+              <button className="btn btn-primary" onClick={runCode} disabled={running} style={{ flex: 1, justifyContent: 'center', gap: '6px' }}>
+                {running ? <><div className="spinner" /> Running...</> : <><ZapIcon size={14} /> Run &amp; Test</>}
               </button>
-              <button className="btn btn-secondary" onClick={() => setCode(challenge.starterCode)} title="Reset to starter">↺</button>
+              <button className="btn btn-secondary" onClick={() => setCode(challenge.starterCode)} title="Reset to starter">Reset</button>
             </div>
 
             {output && (
@@ -444,9 +466,11 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
                   background: results[i] === null ? 'var(--bg-card)' : results[i] ? 'var(--emerald-dim)' : 'var(--rose-dim)',
                   border: `1px solid ${results[i] === null ? 'var(--border-subtle)' : results[i] ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)'}`,
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', fontSize: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
                     <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.input}</span>
-                    <span>{results[i] === null ? '⬜' : results[i] ? '✅' : '❌'}</span>
+                    <span>
+                      {results[i] === null ? <ClockIcon size={14} color="var(--text-muted)" /> : results[i] ? <CheckCircleIcon size={14} color="var(--emerald)" /> : <XCircleIcon size={14} color="var(--rose)" />}
+                    </span>
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '3px', fontFamily: 'var(--font-mono)' }}>
                     Expected: {ex.output}
@@ -462,11 +486,15 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {/* Step indicators */}
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {[{l:'GitHub',done:ghState==='success'},{l:'LinkedIn',done:liState==='success'},{l:'Submit',done:submitted}].map((s,i) => (
+              {[
+                { l: 'GitHub', done: ghState==='success', IconComp: GithubIcon },
+                { l: 'LinkedIn', done: liState==='success', IconComp: LinkedinIcon },
+                { l: 'Submit', done: submitted, IconComp: RocketIcon },
+              ].map((s, i) => (
                 <React.Fragment key={s.l}>
                   <div style={{ textAlign: 'center', flex: 1 }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', margin: '0 auto 4px', background: s.done ? 'var(--emerald-dim)' : 'var(--bg-card)', border: `2px solid ${s.done ? 'var(--emerald)' : 'var(--border-subtle)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', transition: 'all 0.3s' }}>
-                      {s.done ? '✓' : i === 0 ? '⌥' : i === 1 ? '💼' : '🚀'}
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', margin: '0 auto 4px', background: s.done ? 'var(--emerald-dim)' : 'var(--bg-card)', border: `2px solid ${s.done ? 'var(--emerald)' : 'var(--border-subtle)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
+                      {s.done ? <CheckIcon size={16} color="var(--emerald)" /> : <s.IconComp size={16} color="var(--text-muted)" />}
                     </div>
                     <div style={{ fontSize: '10px', fontWeight: 600, color: s.done ? 'var(--emerald)' : 'var(--text-muted)' }}>{s.l}</div>
                   </div>
@@ -477,9 +505,12 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
 
             {/* GitHub */}
             <div className="glass-card" style={{ padding: '18px' }}>
-              <h4 style={{ fontSize: '13px', fontFamily: 'var(--font-display)', marginBottom: '4px' }}>
-                ⌥ GitHub Repository <span style={{ fontSize: '11px', color: 'var(--rose)', fontWeight: 400 }}>— must have README.md</span>
-              </h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <GithubIcon size={16} color="var(--violet-light)" />
+                <h4 style={{ fontSize: '13px', fontFamily: 'var(--font-display)' }}>
+                  GitHub Repository <span style={{ fontSize: '11px', color: 'var(--rose)', fontWeight: 400 }}>&mdash; must have README.md</span>
+                </h4>
+              </div>
               <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: 1.5 }}>
                 Push your solution to a public repo. The repo must include a README.md describing your Day {dayNum} solution.
               </p>
@@ -498,25 +529,30 @@ export default function DayPage({ params }: { params: Promise<{day: string}> }) 
 
             {/* LinkedIn */}
             <div className="glass-card" style={{ padding: '18px' }}>
-              <h4 style={{ fontSize: '13px', fontFamily: 'var(--font-display)', marginBottom: '4px' }}>
-                💼 LinkedIn Post URL
-              </h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <LinkedinIcon size={16} color="var(--cyan-light)" />
+                <h4 style={{ fontSize: '13px', fontFamily: 'var(--font-display)' }}>
+                  LinkedIn Post URL
+                </h4>
+              </div>
 
               {/* Template to copy */}
               <div style={{ background: 'var(--code-bg)', border: '1px solid var(--border-medium)', borderRadius: '10px', padding: '12px', marginBottom: '10px', position: 'relative' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '10px', color: 'var(--violet-light)', fontWeight: 700, textTransform: 'uppercase' }}>📋 Post Template</span>
-                  <button onClick={() => navigator.clipboard.writeText(`Day ${dayNum}/60 ✅ #ABTalks SE Challenge\n\nToday I solved: ${challenge.title}\n\n🔑 Key insight: [your learning here]\n\n🔗 GitHub: [your repo link]\n\n#60DaysChallenge #ABTalks #Python #BuildInPublic`)}
+                  <span style={{ fontSize: '10px', color: 'var(--violet-light)', fontWeight: 700, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <CopyIcon size={10} /> Post Template
+                  </span>
+                  <button onClick={() => navigator.clipboard.writeText(`Day ${dayNum}/60 #ABTalks SE Challenge\n\nToday I solved: ${challenge.title}\n\nKey insight: [your learning here]\n\nGitHub: [your repo link]\n\n#60DaysChallenge #ABTalks #Python #BuildInPublic`)}
                     style={{ fontSize: '10px', color: 'var(--violet-light)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Copy</button>
                 </div>
                 <pre style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--text-primary)', whiteSpace: 'pre-wrap', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-{`Day ${dayNum}/60 ✅ #ABTalks SE Challenge
+{`Day ${dayNum}/60 #ABTalks SE Challenge
 
 Today I solved: ${challenge.title}
 
-🔑 Key insight: [your learning here]
+Key insight: [your learning here]
 
-🔗 GitHub: [your repo link]
+GitHub: [your repo link]
 
 #60DaysChallenge #ABTalks #Python #BuildInPublic`}
                 </pre>
@@ -542,7 +578,7 @@ Today I solved: ${challenge.title}
                 {[{l:'GitHub repo verified',done:ghState==='success'},{l:'LinkedIn post verified',done:liState==='success'}].map(item => (
                   <div key={item.l} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
                     <div style={{ width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0, background: item.done ? 'var(--emerald)' : 'var(--bg-card)', border: `1px solid ${item.done ? 'var(--emerald)' : 'var(--border-medium)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: item.done ? '#fff' : 'var(--text-muted)', fontWeight: 700 }}>
-                      {item.done ? '✓' : '○'}
+                      {item.done ? <CheckIcon size={10} color="#fff" /> : '○'}
                     </div>
                     <span style={{ color: item.done ? 'var(--text-primary)' : 'var(--text-muted)' }}>{item.l}</span>
                   </div>
@@ -552,9 +588,9 @@ Today I solved: ${challenge.title}
                 className="btn btn-primary w-full"
                 disabled={!canSubmit || submitting}
                 onClick={handleFinalSubmit}
-                style={{ justifyContent: 'center', opacity: canSubmit ? 1 : 0.45, cursor: canSubmit ? 'pointer' : 'not-allowed' }}
+                style={{ justifyContent: 'center', opacity: canSubmit ? 1 : 0.45, cursor: canSubmit ? 'pointer' : 'not-allowed', gap: '6px' }}
               >
-                {submitting ? <><div className="spinner" />Submitting...</> : canSubmit ? `🚀 Submit Day ${dayNum}` : '🔒 Complete verifications first'}
+                {submitting ? <><div className="spinner" />Submitting...</> : canSubmit ? <><RocketIcon size={16} /> Submit Day {dayNum}</> : 'Complete verifications first'}
               </button>
             </div>
           </div>
@@ -564,23 +600,20 @@ Today I solved: ${challenge.title}
       {/* Mobile nav */}
       <nav className="mobile-nav">
         {[
-          { icon: '🏠', label: 'Home',  href: '/dashboard' },
-          { icon: '⚡', label: 'Today', href: `/day/${dayNum}` },
-          { icon: '📖', label: 'Task',  href: '#', action: () => setTab('problem') },
-          { icon: '💻', label: 'Code',  href: '#', action: () => setTab('code') },
+          { IconComp: HomeIcon, label: 'Home',  href: '/dashboard' },
+          { IconComp: ZapIcon, label: 'Today', href: `/day/${dayNum}` },
+          { IconComp: FileTextIcon, label: 'Task',  href: '#', action: () => setTab('problem') },
+          { IconComp: TerminalIcon, label: 'Code',  href: '#', action: () => setTab('code') },
         ].map(item => (
           item.action
             ? <button key={item.label} onClick={item.action} className="mobile-nav-item" style={{ background: 'none', border: 'none' }}>
-                <span style={{ fontSize: '20px' }}>{item.icon}</span><span>{item.label}</span>
+                <item.IconComp size={18} /><span>{item.label}</span>
               </button>
             : <Link key={item.label} href={item.href} className="mobile-nav-item">
-                <span style={{ fontSize: '20px' }}>{item.icon}</span><span>{item.label}</span>
+                <item.IconComp size={18} /><span>{item.label}</span>
               </Link>
         ))}
       </nav>
     </div>
   );
 }
-
-// Need React for Fragment in JSX
-import React from 'react';

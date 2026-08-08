@@ -2,14 +2,27 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth, generatePassphrase, TrackId } from '@/context/AuthContext';
+import { useAuth, TrackId } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import {
+  CodeIcon,
+  BarChartIcon,
+  CpuIcon,
+  GithubIcon,
+  LinkedinIcon,
+  CheckIcon,
+  CopyIcon,
+  AlertTriangleIcon,
+  CheckCircleIcon,
+  ArrowRightIcon,
+  ZapIcon,
+} from '@/app/icons';
 
 const TRACKS = [
   {
     id: 'SE' as TrackId,
     label: 'Software Engineering',
-    icon: '⚙️',
+    IconComp: CodeIcon,
     tagline: 'Build real systems from scratch',
     skills: ['Python', 'APIs', 'SQL', 'Git', 'Docker'],
     color: '#7C3AED',
@@ -19,7 +32,7 @@ const TRACKS = [
   {
     id: 'DS' as TrackId,
     label: 'Data Science',
-    icon: '📊',
+    IconComp: BarChartIcon,
     tagline: 'Turn data into decisions',
     skills: ['Python', 'Pandas', 'NumPy', 'ML', 'Viz'],
     color: '#0891B2',
@@ -29,7 +42,7 @@ const TRACKS = [
   {
     id: 'AI' as TrackId,
     label: 'AI Engineering',
-    icon: '🤖',
+    IconComp: CpuIcon,
     tagline: 'Ship production-ready AI apps',
     skills: ['LLMs', 'RAG', 'Agents', 'Claude', 'MCP'],
     color: '#D97706',
@@ -107,7 +120,7 @@ export default function SignupPage() {
           <div className="auth-card">
             <div style={{ marginBottom: '24px' }}>
               <h1 style={{ fontSize: '22px', marginBottom: '6px' }}>Create your account</h1>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Step 1 of 3 — Basic details</p>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Step 1 of 3 &mdash; Basic details</p>
             </div>
             <form onSubmit={handleStep1} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
@@ -122,8 +135,8 @@ export default function SignupPage() {
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--text-secondary)' }}>College / University</label>
                 <input className="input" placeholder="e.g. Amrita Vishwa Vidyapeetham" value={college} onChange={e => setCollege(e.target.value)} />
               </div>
-              <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '8px', justifyContent: 'center' }}>
-                Continue →
+              <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '8px', justifyContent: 'center', gap: '6px' }}>
+                Continue <ArrowRightIcon size={14} />
               </button>
               <div style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-muted)' }}>
                 Already enrolled? <Link href="/login" style={{ color: 'var(--violet-light)', fontWeight: 600 }}>Sign in</Link>
@@ -137,7 +150,7 @@ export default function SignupPage() {
           <div className="auth-card">
             <div style={{ marginBottom: '20px' }}>
               <h1 style={{ fontSize: '22px', marginBottom: '6px' }}>Choose your track</h1>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Step 2 of 3 — What are you building towards?</p>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Step 2 of 3 &mdash; What are you building towards?</p>
             </div>
             <form onSubmit={handleStep2} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {/* Track cards */}
@@ -158,8 +171,10 @@ export default function SignupPage() {
                     <div style={{
                       width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
                       background: t.bg, border: `1px solid ${t.border}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px',
-                    }}>{t.icon}</div>
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <t.IconComp size={22} color={t.color} />
+                    </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '14px', fontWeight: 700, color: selectedTrack === t.id ? t.color : 'var(--text-primary)', marginBottom: '2px' }}>{t.label}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t.tagline}</div>
@@ -170,7 +185,7 @@ export default function SignupPage() {
                       </div>
                     </div>
                     <div style={{ width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0, border: `2px solid ${selectedTrack === t.id ? t.color : 'var(--border-medium)'}`, background: selectedTrack === t.id ? t.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {selectedTrack === t.id && <span style={{ fontSize: '10px', color: '#fff' }}>✓</span>}
+                      {selectedTrack === t.id && <CheckIcon size={12} color="#fff" />}
                     </div>
                   </button>
                 ))}
@@ -178,21 +193,21 @@ export default function SignupPage() {
 
               <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--violet-light)' }}>
-                    ⌥ GitHub Username * <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 400 }}>(used for verification)</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--violet-light)' }}>
+                    <GithubIcon size={14} color="var(--violet-light)" /> GitHub Username * <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 400 }}>(used for verification)</span>
                   </label>
                   <input className="input" placeholder="karunuesh304" value={githubUsername} onChange={e => setGithubUsername(e.target.value)} required />
                 </div>
                 <div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--cyan-light)' }}>
-                    💼 LinkedIn Profile URL * <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 400 }}>(used for verification)</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, marginBottom: '5px', color: 'var(--cyan-light)' }}>
+                    <LinkedinIcon size={14} color="var(--cyan-light)" /> LinkedIn Profile URL * <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 400 }}>(used for verification)</span>
                   </label>
                   <input type="url" className="input" placeholder="https://linkedin.com/in/username" value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} required />
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary w-full" disabled={!selectedTrack} style={{ justifyContent: 'center', opacity: selectedTrack ? 1 : 0.5, cursor: selectedTrack ? 'pointer' : 'not-allowed' }}>
-                Create Account →
+              <button type="submit" className="btn btn-primary w-full" disabled={!selectedTrack} style={{ justifyContent: 'center', opacity: selectedTrack ? 1 : 0.5, cursor: selectedTrack ? 'pointer' : 'not-allowed', gap: '6px' }}>
+                Create Account <ArrowRightIcon size={14} />
               </button>
             </form>
           </div>
@@ -202,9 +217,11 @@ export default function SignupPage() {
         {step === 3 && (
           <div className="auth-card">
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div style={{ fontSize: '52px', marginBottom: '12px' }}>🎉</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                <CheckCircleIcon size={52} color="var(--emerald)" />
+              </div>
               <h1 style={{ fontSize: '22px', marginBottom: '6px' }}>You&apos;re enrolled!</h1>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Save your login credentials — you&apos;ll need them every time</p>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Save your login credentials &mdash; you&apos;ll need them every time</p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
@@ -221,19 +238,19 @@ export default function SignupPage() {
                   <div className="passphrase-box">{generatedPassphrase}</div>
                   <button
                     onClick={copyPassphrase}
-                    style={{ position: 'absolute', top: '50%', right: '12px', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer' }}
+                    style={{ position: 'absolute', top: '50%', right: '12px', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                   >
-                    {copied ? '✓ Copied!' : 'Copy'}
+                    {copied ? <><CheckIcon size={12} /> Copied!</> : <><CopyIcon size={12} /> Copy</>}
                   </button>
                 </div>
-                <p style={{ fontSize: '11px', color: 'var(--rose)', marginTop: '6px', lineHeight: 1.5 }}>
-                  ⚠️ This passphrase is shown only once. Please save it securely — you need it to log in.
+                <p style={{ fontSize: '11px', color: 'var(--rose)', marginTop: '6px', lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <AlertTriangleIcon size={14} color="var(--rose)" style={{ flexShrink: 0 }} /> This passphrase is shown only once. Please save it securely &mdash; you need it to log in.
                 </p>
               </div>
             </div>
 
-            <button className="btn btn-primary w-full" style={{ justifyContent: 'center' }} onClick={() => router.push('/dashboard')}>
-              🚀 Start Day 1 Challenge →
+            <button className="btn btn-primary w-full" style={{ justifyContent: 'center', gap: '6px' }} onClick={() => router.push('/dashboard')}>
+              <ZapIcon size={16} /> Start Day 1 Challenge <ArrowRightIcon size={14} />
             </button>
           </div>
         )}

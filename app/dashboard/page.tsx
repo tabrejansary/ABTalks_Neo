@@ -4,13 +4,50 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import {
+  FlameIcon,
+  ShieldIcon,
+  ZapIcon,
+  ClockIcon,
+  CopyIcon,
+  CheckIcon,
+  CloseIcon,
+  SunIcon,
+  MoonIcon,
+  LogOutIcon,
+  BriefcaseIcon,
+  ThumbsUpIcon,
+  CalendarIcon,
+  CodeIcon,
+  TrophyIcon,
+  UsersIcon,
+  PinIcon,
+  ArrowRightIcon,
+  AlertTriangleIcon,
+  HomeIcon,
+  MedalIcon,
+  StarIcon,
+  CheckCircleIcon,
+} from '@/app/icons';
+
+/* ---- Helper: Convert Challenge Day (1..60) to Date ---- */
+function dayToDate(day: number): { dateStr: string; monthName: string; dayNum: number; dayOfWeek: string } {
+  // Start batch on Aug 8, 2026
+  const start = new Date(2026, 7, 8); // Month index 7 = August
+  const d = new Date(start);
+  d.setDate(start.getDate() + (day - 1));
+  const monthName = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  const dayOfWeek = d.toLocaleString('en-US', { weekday: 'short' });
+  const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return { dateStr, monthName, dayNum: d.getDate(), dayOfWeek };
+}
 
 /* ---- Onboarding Tour ---- */
 const STEPS = [
-  { id: 'streak-hero', title: '🔥 Your Streak', desc: 'Your streak grows every day you submit proof of work. Miss a day? Use a Shield!' },
-  { id: 'today-task',  title: '⚡ Today\'s Challenge', desc: 'Your active challenge task. Click "Start Challenge" to open the code playground.' },
-  { id: 'progress-map', title: '📅 60-Day Grid', desc: 'All 60 days at a glance. Purple = today, green = done, amber = late, red = missed.' },
-  { id: 'leaderboard', title: '🏆 Leaderboard', desc: 'See where you rank among all builders in your batch.' },
+  { id: 'streak-hero', title: 'Your Streak', desc: 'Your streak grows every day you submit proof of work. Miss a day? Use a Shield!' },
+  { id: 'today-task',  title: 'Today\'s Challenge', desc: 'Your active challenge task. Click "Start Challenge" to open the code playground.' },
+  { id: 'progress-map', title: '60-Day Grid', desc: 'All 60 days at a glance. Purple = today, green = done, amber = late, red = missed.' },
+  { id: 'leaderboard', title: 'Leaderboard', desc: 'See where you rank among all builders in your batch.' },
 ];
 
 function Tour({ onDone }: { onDone: () => void }) {
@@ -32,7 +69,6 @@ function Tour({ onDone }: { onDone: () => void }) {
 
   return (
     <>
-      {/* Backdrop with hole */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 9997, pointerEvents: 'none', background: 'rgba(0,0,0,0)' }} />
       <div className="tour-highlight" style={{ top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2 }} />
       <div className="tour-tooltip" style={{ top: tipTop, left: tipLeft }}>
@@ -44,10 +80,10 @@ function Tour({ onDone }: { onDone: () => void }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{step + 1} / {STEPS.length}</span>
           <div style={{ display: 'flex', gap: '6px' }}>
-            {step > 0 && <button className="btn btn-ghost btn-sm" onClick={() => setStep(s => s - 1)}>← Back</button>}
+            {step > 0 && <button className="btn btn-ghost btn-sm" onClick={() => setStep(s => s - 1)}>&larr; Back</button>}
             {step < STEPS.length - 1
-              ? <button className="btn btn-primary btn-sm" onClick={() => setStep(s => s + 1)}>Next →</button>
-              : <button className="btn btn-primary btn-sm" onClick={onDone}>Finish 🎉</button>
+              ? <button className="btn btn-primary btn-sm" onClick={() => setStep(s => s + 1)}>Next &rarr;</button>
+              : <button className="btn btn-primary btn-sm" onClick={onDone}>Finish</button>
             }
           </div>
         </div>
@@ -62,7 +98,9 @@ function ShieldModal({ missedDays, onUse, onClose }: { missedDays: number[]; onU
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div className="glass-card" style={{ padding: '28px', maxWidth: '340px', width: '100%', textAlign: 'center' }}>
-        <div style={{ fontSize: '44px', marginBottom: '12px' }}>🛡️</div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+          <ShieldIcon size={44} color="var(--amber)" />
+        </div>
         <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', marginBottom: '8px' }}>Use a Streak Shield</h3>
         <p style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: '20px' }}>
           A shield will mark a missed day as completed and preserve your streak.
@@ -81,8 +119,8 @@ function ShieldModal({ missedDays, onUse, onClose }: { missedDays: number[]; onU
         )}
         <div style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn-secondary w-full" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary w-full" onClick={() => onUse(selected)} style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)' }}>
-            🛡️ Use Shield
+          <button className="btn btn-primary w-full" onClick={() => onUse(selected)} style={{ background: 'linear-gradient(135deg,#F59E0B,#D97706)', gap: '6px' }}>
+            <ShieldIcon size={16} /> Use Shield
           </button>
         </div>
       </div>
@@ -128,7 +166,7 @@ function ChallengeCountdown() {
       background: 'var(--bg-card)', border: `1px solid ${color}44`,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ fontSize: '16px' }}>⏰</span>
+        <ClockIcon size={18} color={color} />
         <div>
           <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Next challenge unlocks in</div>
           <div style={{ fontSize: '18px', fontWeight: 800, fontFamily: 'var(--font-display)', color, letterSpacing: '0.05em', lineHeight: 1.2 }}>
@@ -138,7 +176,6 @@ function ChallengeCountdown() {
           </div>
         </div>
       </div>
-      {/* Mini progress bar */}
       <div style={{ width: '60px' }}>
         <div style={{ height: '4px', borderRadius: '2px', background: 'var(--border-subtle)', overflow: 'hidden' }}>
           <div style={{ height: '100%', borderRadius: '2px', background: color, width: `${pct * 100}%`, transition: 'width 1s linear, background 1s' }} />
@@ -172,15 +209,16 @@ function ProfileModal({
     navigator.clipboard.writeText(user.passphrase);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    showToast('📋 Passphrase copied to clipboard!');
+    showToast('Passphrase copied to clipboard!');
   };
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div className="glass-card" style={{ padding: '24px', maxWidth: '420px', width: '100%', borderRadius: '20px', background: 'var(--bg-secondary)', border: '1px solid var(--border-medium)', position: 'relative' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>✕</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+          <CloseIcon size={18} />
+        </button>
 
-        {/* Profile Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
           <div style={{
             width: '52px', height: '52px', borderRadius: '50%',
@@ -198,9 +236,7 @@ function ProfileModal({
           </div>
         </div>
 
-        {/* Info Grid */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-          {/* Track Selector */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Active Track</span>
             <select
@@ -217,24 +253,22 @@ function ProfileModal({
                 fontSize: '11px', fontWeight: 700, outline: 'none', cursor: 'pointer',
               }}
             >
-              <option value="SE" style={{ background: '#0F172A', color: '#fff' }}>⚙️ Software Engineering</option>
-              <option value="DS" style={{ background: '#0F172A', color: '#fff' }}>📊 Data Science</option>
-              <option value="AI" style={{ background: '#0F172A', color: '#fff' }}>🤖 AI Engineering</option>
+              <option value="SE" style={{ background: '#0F172A', color: '#fff' }}>Software Engineering</option>
+              <option value="DS" style={{ background: '#0F172A', color: '#fff' }}>Data Science</option>
+              <option value="AI" style={{ background: '#0F172A', color: '#fff' }}>AI Engineering</option>
             </select>
           </div>
 
-          {/* GitHub Handle */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>GitHub</span>
             <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{user.githubUsername || 'Not connected'}</span>
           </div>
 
-          {/* Secret Passphrase */}
           <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
               <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>Secret Passphrase</span>
-              <button onClick={copyPass} style={{ background: 'none', border: 'none', color: 'var(--violet-light)', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
-                {copied ? '✓ Copied' : 'Copy'}
+              <button onClick={copyPass} style={{ background: 'none', border: 'none', color: 'var(--violet-light)', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {copied ? <><CheckIcon size={12} /> Copied</> : <><CopyIcon size={12} /> Copy</>}
               </button>
             </div>
             <div style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: 'var(--amber)', fontWeight: 600, wordBreak: 'break-all' }}>
@@ -242,15 +276,13 @@ function ProfileModal({
             </div>
           </div>
 
-          {/* Preferences / Theme */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Theme Mode</span>
             <button className="btn btn-secondary btn-sm" onClick={toggleTheme} style={{ gap: '6px' }}>
-              {theme === 'dark' ? '☀️ Switch to Light' : '🌙 Switch to Dark'}
+              {theme === 'dark' ? <><SunIcon size={14} /> Switch to Light</> : <><MoonIcon size={14} /> Switch to Dark</>}
             </button>
           </div>
 
-          {/* Route Map Quick Access */}
           <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'var(--input-bg)', border: '1px solid var(--border-subtle)' }}>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px' }}>Route Map Links</div>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -261,21 +293,182 @@ function ProfileModal({
           </div>
         </div>
 
-        {/* Logout Button */}
         <button
           className="btn w-full"
           onClick={onLogout}
           style={{
             background: 'rgba(244,63,94,0.15)', border: '1px solid rgba(244,63,94,0.3)',
-            color: '#FDA4AF', fontWeight: 700, justifyContent: 'center', borderRadius: '12px', padding: '12px',
+            color: '#FDA4AF', fontWeight: 700, justifyContent: 'center', borderRadius: '12px', padding: '12px', gap: '8px',
           }}
         >
-          🚪 Logout from Account
+          <LogOutIcon size={16} color="#FDA4AF" /> Logout from Account
         </button>
       </div>
     </div>
   );
 }
+
+/* ---- Badge Icon Renderer ---- */
+function BadgeIcon({ icon, earned }: { icon: string; earned: boolean }) {
+  const color = earned ? 'var(--violet-light)' : 'var(--text-muted)';
+  switch (icon) {
+    case '🔥': return <FlameIcon size={20} color={earned ? 'var(--amber)' : color} />;
+    case '⚡': return <ZapIcon size={20} color={earned ? 'var(--cyan-light)' : color} />;
+    case '🛡️': return <ShieldIcon size={20} color={earned ? 'var(--amber)' : color} />;
+    case '🌟': return <StarIcon size={20} color={earned ? 'var(--amber)' : color} fill={earned ? 'var(--amber)' : 'none'} />;
+    case '🏆': return <TrophyIcon size={20} color={earned ? 'var(--violet-light)' : color} />;
+    default:   return <MedalIcon size={20} color={color} />;
+  }
+}
+
+/* ---- STREAK & PROGRESS HEATMAP MATRIX ---- */
+function ProgressMapMatrix({ days, taskDay }: { days: any[]; taskDay: number }) {
+  const [selectedMonth, setSelectedMonth] = useState<'ALL' | 'AUG' | 'SEP' | 'OCT'>('ALL');
+  const [hoveredDay, setHoveredDay] = useState<any | null>(null);
+
+  const tileClass = (status: string) => {
+    switch (status) {
+      case 'completed':      return 'day-tile-completed';
+      case 'completed-late': return 'day-tile-completed-late';
+      case 'missed':         return 'day-tile-missed';
+      case 'today':          return 'day-tile-today';
+      default:               return 'day-tile-future';
+    }
+  };
+
+  // Group days by month (Aug, Sep, Oct)
+  const monthGroups: { monthName: string; days: any[] }[] = [];
+  days.forEach(d => {
+    const info = dayToDate(d.day);
+    let group = monthGroups.find(g => g.monthName === info.monthName);
+    if (!group) {
+      group = { monthName: info.monthName, days: [] };
+      monthGroups.push(group);
+    }
+    group.days.push({ ...d, dateInfo: info });
+  });
+
+  const visibleGroups = selectedMonth === 'ALL'
+    ? monthGroups
+    : monthGroups.filter(g => g.monthName === selectedMonth);
+
+  return (
+    <div id="progress-map" className="glass-card" style={{ padding: '20px', marginBottom: '14px', position: 'relative' }}>
+      {/* Section Header & Month Tabs */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CalendarIcon size={18} color="var(--violet-light)" />
+            <h3 style={{ fontSize: '15px', fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+              60-Day Progress Matrix
+            </h3>
+          </div>
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+            Batch 4 &middot; Aug 8 &ndash; Oct 6, 2026
+          </p>
+        </div>
+
+        {/* Month Filter Tabs */}
+        <div style={{ display: 'flex', gap: '3px', background: 'var(--input-bg)', padding: '3px', borderRadius: '10px', border: '1px solid var(--border-subtle)', flexWrap: 'wrap' }}>
+          {(['ALL', 'AUG', 'SEP', 'OCT'] as const).map(m => (
+            <button
+              key={m}
+              onClick={() => setSelectedMonth(m)}
+              style={{
+                padding: '4px 10px', borderRadius: '7px', fontSize: '11px', fontWeight: 600,
+                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                background: selectedMonth === m ? 'var(--violet)' : 'transparent',
+                color: selectedMonth === m ? '#fff' : 'var(--text-muted)',
+              }}
+            >
+              {m === 'ALL' ? '60-Day Grid' : m}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Hover Info Banner */}
+      <div style={{
+        minHeight: '36px', padding: '8px 12px', borderRadius: '10px',
+        background: 'var(--input-bg)', border: '1px solid var(--border-subtle)',
+        marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        fontSize: '12px',
+      }}>
+        {hoveredDay ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Day {hoveredDay.day}</span>
+              <span style={{ color: 'var(--text-muted)' }}>&middot;</span>
+              <span style={{ color: 'var(--violet-light)', fontFamily: 'var(--font-mono)' }}>{dayToDate(hoveredDay.day).dateStr}</span>
+            </div>
+            <span className={`badge ${hoveredDay.status === 'completed' ? 'badge-emerald' : hoveredDay.status === 'today' ? 'badge-violet' : hoveredDay.status === 'missed' ? 'badge-rose' : 'badge-amber'}`}>
+              {hoveredDay.status.toUpperCase()}
+            </span>
+          </div>
+        ) : (
+          <div style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ZapIcon size={12} color="var(--violet-light)" /> Hover or tap any day to inspect details
+          </div>
+        )}
+      </div>
+
+      {/* Month Heatmap View (Fluid 100% width - No Scrollbar) */}
+      <div className="no-scrollbar" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {visibleGroups.map(group => (
+          <div key={group.monthName}>
+            {/* Month Header */}
+            <div style={{
+              fontSize: '11px', fontWeight: 800, fontFamily: 'var(--font-display)',
+              color: 'var(--violet-light)', letterSpacing: '0.08em', marginBottom: '8px',
+              borderBottom: '1px solid var(--border-subtle)', paddingBottom: '4px',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <span>{group.monthName} 2026</span>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>{group.days.length} Days</span>
+            </div>
+
+            {/* Calendar Grid for Month (7 columns per week) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', width: '100%' }}>
+              {group.days.map(d => (
+                <Link
+                  key={d.day}
+                  href={`/day/${d.day}`}
+                  onMouseEnter={() => setHoveredDay(d)}
+                  onMouseLeave={() => setHoveredDay(null)}
+                  className={`day-tile ${tileClass(d.status)}`}
+                  style={{ height: '36px' }}
+                >
+                  <span style={{ fontSize: '11px' }}>{d.dateInfo.dayNum}</span>
+                  <span style={{ fontSize: '8px', opacity: 0.6, fontWeight: 500 }}>D{d.day}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Legend Footer */}
+      <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {[
+            ['var(--emerald)', 'Completed'],
+            ['var(--amber)', 'Late'],
+            ['var(--rose)', 'Missed'],
+            ['var(--violet)', 'Today'],
+            ['var(--border-subtle)', 'Upcoming'],
+          ].map(([c, l]) => (
+            <div key={l} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: c, flexShrink: 0 }} />
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>{l}</span>
+            </div>
+          ))}
+        </div>
+        <span style={{ fontSize: '10px', color: 'var(--text-disabled)', fontFamily: 'var(--font-mono)' }}>ABTalks Verification Engine</span>
+      </div>
+    </div>
+  );
+}
+
 
 /* ---- Main Dashboard ---- */
 export default function Dashboard() {
@@ -308,7 +501,7 @@ export default function Dashboard() {
   const handleUseShield = (day: number) => {
     const ok = useShield(day);
     setShowShieldModal(false);
-    if (ok) showToast('🛡️ Shield used! Day ' + day + ' is now covered.');
+    if (ok) showToast('Shield used! Day ' + day + ' is now covered.');
   };
 
   const handleLogout = () => { logout(); router.push('/'); };
@@ -322,19 +515,8 @@ export default function Dashboard() {
   const currentTask = days.find(d => d.status === 'today');
   const taskDay = currentTask?.day ?? user.currentDay;
 
-  // Day tile colours
-  const tileClass = (status: string) => {
-    switch (status) {
-      case 'completed':      return 'day-tile-completed';
-      case 'completed-late': return 'day-tile-completed-late';
-      case 'missed':         return 'day-tile-missed';
-      case 'today':          return 'day-tile-today';
-      default:               return 'day-tile-future';
-    }
-  };
-
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '80px' }}>
+    <div className="dashboard-container" style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '80px' }}>
       {showTour && <Tour onDone={finishTour} />}
       {showShieldModal && <ShieldModal missedDays={missedDays.length > 0 ? missedDays : [user.currentDay - 1]} onUse={handleUseShield} onClose={() => setShowShieldModal(false)} />}
       {showProfileModal && (
@@ -360,7 +542,7 @@ export default function Dashboard() {
           <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
             {/* Jobs Pill */}
             <button
-              onClick={() => showToast('💼 Jobs Board: 45+ recruiters hiring challenge finishers!')}
+              onClick={() => showToast('Jobs Board: 45+ recruiters hiring challenge finishers!')}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '6px 12px', borderRadius: '20px',
@@ -368,7 +550,7 @@ export default function Dashboard() {
                 fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer',
               }}
             >
-              💼 Jobs
+              <BriefcaseIcon size={12} color="var(--violet-light)" /> Jobs
             </button>
 
             {/* Likes / Points Pill */}
@@ -380,7 +562,7 @@ export default function Dashboard() {
                 fontSize: '11px', fontWeight: 700, color: 'var(--violet-light)',
               }}
             >
-              👍 {user.daysCompleted * 10}
+              <ThumbsUpIcon size={12} color="var(--violet-light)" /> {user.daysCompleted * 10}
             </div>
 
             {/* Streak Shields Pill */}
@@ -389,9 +571,9 @@ export default function Dashboard() {
                 className="streak-shield"
                 onClick={() => setShowShieldModal(true)}
                 title="Use streak shield"
-                style={{ padding: '6px 10px', fontSize: '11px' }}
+                style={{ padding: '6px 10px', fontSize: '11px', gap: '4px' }}
               >
-                🛡️ {user.streakShields}
+                <ShieldIcon size={12} /> {user.streakShields}
               </button>
             )}
 
@@ -425,15 +607,15 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '16px' }}>
 
         {/* ---- Welcome header ---- */}
         <div style={{ marginBottom: '18px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '2px' }}>Good evening 🌙</p>
-          <h1 style={{ fontSize: '20px', fontFamily: 'var(--font-display)' }}>Hey, {user.name.split(' ')[0]} 👋</h1>
+          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '2px' }}>Good evening</p>
+          <h1 style={{ fontSize: '20px', fontFamily: 'var(--font-display)' }}>Hey, {user.name.split(' ')[0]}</h1>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>@{user.username}</span>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>⌥ {user.githubUsername}</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>github: {user.githubUsername}</span>
             <span className="badge badge-violet" style={{ fontSize: '10px' }}>{user.track} Track</span>
           </div>
         </div>
@@ -441,19 +623,19 @@ export default function Dashboard() {
         {/* ---- Missed day alert ---- */}
         {missedDays.length > 0 && (
           <div className="glass-card" style={{ padding: '16px 18px', marginBottom: '14px', borderColor: 'rgba(244,63,94,0.25)', background: 'rgba(244,63,94,0.06)' }}>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <span style={{ fontSize: '22px' }}>⚠️</span>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <AlertTriangleIcon size={22} color="#FDA4AF" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: '13px', color: '#FDA4AF', marginBottom: '3px' }}>
                   You missed {missedDays.length === 1 ? `Day ${missedDays[0]}` : `${missedDays.length} days`}
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                  You have <strong style={{ color: 'var(--amber)' }}>{user.streakShields} shield{user.streakShields !== 1 ? 's' : ''}</strong> — use one to recover your streak.
+                  You have <strong style={{ color: 'var(--amber)' }}>{user.streakShields} shield{user.streakShields !== 1 ? 's' : ''}</strong> &mdash; use one to recover your streak.
                 </div>
               </div>
               {user.streakShields > 0 && (
-                <button className="streak-shield btn-sm" onClick={() => setShowShieldModal(true)}>
-                  🛡️ Use Shield
+                <button className="streak-shield btn-sm" onClick={() => setShowShieldModal(true)} style={{ gap: '4px' }}>
+                  <ShieldIcon size={14} /> Use Shield
                 </button>
               )}
             </div>
@@ -466,11 +648,13 @@ export default function Dashboard() {
           background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(6,182,212,0.06))',
           borderColor: 'rgba(124,58,237,0.25)',
         }}>
-          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Current Streak</p>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
+            Current Streak &amp; Consistency
+          </p>
+          <div className="streak-hero-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '10px' }}>
-                <span className="animate-streak" style={{ fontSize: '28px', lineHeight: 1 }}>🔥</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '12px' }}>
+                <FlameIcon size={32} color="var(--amber)" className="animate-streak" />
                 <span style={{ fontSize: '48px', fontWeight: 800, fontFamily: 'var(--font-display)', lineHeight: 1, background: 'linear-gradient(135deg,#F97316,#F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   {user.streak}
                 </span>
@@ -486,44 +670,48 @@ export default function Dashboard() {
               </div>
             </div>
             {/* Progress ring */}
-            <svg width="72" height="72" viewBox="0 0 72 72">
-              <circle cx="36" cy="36" r="30" fill="none" stroke="var(--border-subtle)" strokeWidth="5" />
-              <circle cx="36" cy="36" r="30" fill="none"
-                stroke="url(#pg)" strokeWidth="5"
-                strokeDasharray={2 * Math.PI * 30}
-                strokeDashoffset={2 * Math.PI * 30 * (1 - completion / 100)}
-                strokeLinecap="round"
-                transform="rotate(-90 36 36)"
-                style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)' }}
-              />
-              <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#7C3AED" /><stop offset="100%" stopColor="#06B6D4" />
-              </linearGradient></defs>
-              <text x="36" y="40" textAnchor="middle" fill="var(--text-primary)" fontSize="12" fontWeight="700" fontFamily="var(--font-display)">{completion}%</text>
-            </svg>
+            <div className="streak-progress-ring">
+              <svg width="76" height="76" viewBox="0 0 76 76">
+                <circle cx="38" cy="38" r="32" fill="none" stroke="var(--border-subtle)" strokeWidth="5" />
+                <circle cx="38" cy="38" r="32" fill="none"
+                  stroke="url(#pg)" strokeWidth="5"
+                  strokeDasharray={2 * Math.PI * 32}
+                  strokeDashoffset={2 * Math.PI * 32 * (1 - completion / 100)}
+                  strokeLinecap="round"
+                  transform="rotate(-90 38 38)"
+                  style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)' }}
+                />
+                <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#7C3AED" /><stop offset="100%" stopColor="#06B6D4" />
+                </linearGradient></defs>
+                <text x="38" y="42" textAnchor="middle" fill="var(--text-primary)" fontSize="13" fontWeight="700" fontFamily="var(--font-display)">{completion}%</text>
+              </svg>
+            </div>
           </div>
 
           {/* Progress bar */}
-          <div style={{ marginTop: '14px' }}>
+          <div style={{ marginTop: '16px' }}>
             <div className="progress-bar-track">
               <div className="progress-bar-fill" style={{ width: `${completion}%` }} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
-              <span>Day 1</span><span>Day 60</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '6px' }}>
+              <span>Aug 8 (Day 1)</span><span>Oct 6 (Day 60)</span>
             </div>
           </div>
         </div>
 
-        {/* ---- STATS ROW ---- */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '8px', marginBottom: '14px' }}>
+        {/* ---- STATS ROW (Responsive 2x2 grid on mobile) ---- */}
+        <div className="stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '8px', marginBottom: '14px' }}>
           {[
-            { icon: '📅', val: `${taskDay}/60`, lbl: 'Day' },
-            { icon: '⚙️', val: user.track, lbl: 'Track' },
-            { icon: '🏅', val: `#${user.daysCompleted > 0 ? Math.max(1, 100 - user.daysCompleted) : '—'}`, lbl: 'Rank est.' },
-            { icon: '👥', val: user.referrals, lbl: 'Refs' },
+            { IconComp: CalendarIcon, color: 'var(--violet-light)', val: `${taskDay}/60`, lbl: 'Day' },
+            { IconComp: CodeIcon, color: 'var(--cyan-light)', val: user.track, lbl: 'Track' },
+            { IconComp: TrophyIcon, color: 'var(--amber)', val: `#${user.daysCompleted > 0 ? Math.max(1, 100 - user.daysCompleted) : '—'}`, lbl: 'Rank est.' },
+            { IconComp: UsersIcon, color: 'var(--emerald)', val: user.referrals, lbl: 'Refs' },
           ].map((s, i) => (
             <div key={i} className="glass-card" style={{ padding: '12px 8px', textAlign: 'center' }}>
-              <div style={{ fontSize: '18px', marginBottom: '3px' }}>{s.icon}</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4px' }}>
+                <s.IconComp size={18} color={s.color} />
+              </div>
               <div style={{ fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-display)' }}>{s.val}</div>
               <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>{s.lbl}</div>
             </div>
@@ -533,8 +721,8 @@ export default function Dashboard() {
         {/* ---- TODAY'S TASK ---- */}
         <div id="today-task" className="glass-card" style={{ padding: '20px', marginBottom: '14px', borderColor: 'rgba(124,58,237,0.2)', background: 'rgba(124,58,237,0.06)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-            <p style={{ fontSize: '11px', color: 'var(--violet-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-              📌 Active Challenge · Day {taskDay}
+            <p style={{ fontSize: '11px', color: 'var(--violet-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <PinIcon size={14} color="var(--violet-light)" /> Active Challenge &middot; Day {taskDay}
             </p>
             <span className="badge badge-hard">Hard</span>
           </div>
@@ -542,39 +730,23 @@ export default function Dashboard() {
           <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--text-secondary)', marginBottom: '16px' }}>
             Build a command-line task management app with CRUD operations, persisted to a JSON file.
           </p>
-          {/* ---- COUNTDOWN TIMER ---- */}
           <ChallengeCountdown />
-          <Link href={`/day/${taskDay}`} className="btn btn-primary w-full" style={{ justifyContent: 'center', textDecoration: 'none' }}>
-            ⚡ Start Day {taskDay} Challenge →
+          <Link href={`/day/${taskDay}`} className="btn btn-primary w-full" style={{ justifyContent: 'center', textDecoration: 'none', gap: '8px' }}>
+            <ZapIcon size={16} /> Start Day {taskDay} Challenge <ArrowRightIcon size={14} />
           </Link>
         </div>
 
-        {/* ---- PROGRESS MAP ---- */}
-        <div id="progress-map" className="glass-card" style={{ padding: '16px', marginBottom: '14px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)' }}>60-Day Progress Map</h3>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Day {taskDay} of 60</span>
-          </div>
-          <div className="day-grid">
-            {days.map(d => (
-              <Link key={d.day} href={`/day/${d.day}`} className={`day-tile ${tileClass(d.status)}`} title={`Day ${d.day}`} />
-            ))}
-          </div>
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
-            {[['var(--emerald)','Done'],['var(--amber)','Late'],['var(--rose)','Missed'],['var(--violet)','Today'],['var(--border-subtle)','Future']].map(([c,l]) => (
-              <div key={l} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: c, flexShrink: 0 }} />
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{l}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* ---- 60-DAY PROGRESS MATRIX ---- */}
+        <ProgressMapMatrix days={days} taskDay={taskDay} />
+
 
         {/* ---- BADGES ---- */}
         <div className="glass-card" style={{ padding: '16px', marginBottom: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)' }}>🏅 Achievements & Badges</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <MedalIcon size={16} color="var(--violet-light)" />
+              <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)' }}>Achievements &amp; Badges</h3>
+            </div>
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{user.badges.filter(b => b.earned).length}/{user.badges.length} earned</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '10px' }}>
@@ -584,12 +756,16 @@ export default function Dashboard() {
                   width: '44px', height: '44px', borderRadius: '12px', margin: '0 auto 5px',
                   background: badge.earned ? 'var(--violet-dim)' : 'var(--bg-card)',
                   border: `1px solid ${badge.earned ? 'rgba(124,58,237,0.3)' : 'var(--border-subtle)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.3s',
-                }}>{badge.icon}</div>
+                }}>
+                  <BadgeIcon icon={badge.icon} earned={badge.earned} />
+                </div>
                 <div style={{ fontSize: '9px', fontWeight: 600, color: badge.earned ? 'var(--text-secondary)' : 'var(--text-disabled)', lineHeight: 1.3 }}>{badge.label}</div>
                 {badge.shieldReward && badge.earned && (
-                  <div style={{ fontSize: '8px', color: 'var(--amber)', marginTop: '2px' }}>+1 🛡️</div>
+                  <div style={{ fontSize: '8px', color: 'var(--amber)', marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px' }}>
+                    +1 <ShieldIcon size={10} color="var(--amber)" />
+                  </div>
                 )}
               </div>
             ))}
@@ -599,7 +775,10 @@ export default function Dashboard() {
         {/* ---- LEADERBOARD ---- */}
         <div id="leaderboard" className="glass-card" style={{ padding: '16px', marginBottom: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)' }}>🏆 Leaderboard</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <TrophyIcon size={16} color="var(--amber)" />
+              <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)' }}>Leaderboard</h3>
+            </div>
             <span className="badge badge-violet" style={{ fontSize: '10px' }}>Batch 4</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -619,7 +798,9 @@ export default function Dashboard() {
                   </div>
                   <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{p.college}</div>
                 </div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--amber)' }}>🔥 {p.streak}</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <FlameIcon size={14} color="var(--amber)" /> {p.streak}
+                </div>
               </div>
             ))}
           </div>
@@ -627,13 +808,18 @@ export default function Dashboard() {
 
         {/* ---- REFERRAL ---- */}
         <div className="glass-card" style={{ padding: '16px' }}>
-          <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)', marginBottom: '8px' }}>👥 Refer & Earn Shields</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+            <UsersIcon size={16} color="var(--violet-light)" />
+            <h3 style={{ fontSize: '14px', fontFamily: 'var(--font-display)' }}>Refer &amp; Earn Shields</h3>
+          </div>
           <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '12px' }}>
             Invite friends with your code. Each successful referral earns you 1 extra streak shield!
           </p>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--bg-card)', border: '1px solid var(--border-medium)', borderRadius: '10px', padding: '10px 14px' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', fontWeight: 700, color: 'var(--violet-light)', letterSpacing: '0.1em', flex: 1 }}>{user.referralCode}</span>
-            <button className="btn btn-secondary btn-sm" onClick={() => { navigator.clipboard.writeText(user.referralCode); showToast('✓ Referral code copied!'); }}>Copy</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => { navigator.clipboard.writeText(user.referralCode); showToast('Referral code copied!'); }} style={{ gap: '4px' }}>
+              <CopyIcon size={12} /> Copy
+            </button>
           </div>
         </div>
       </div>
@@ -641,18 +827,18 @@ export default function Dashboard() {
       {/* ---- MOBILE NAV ---- */}
       <nav className="mobile-nav">
         {[
-          { id: 'home', icon: '🏠', label: 'Home',    href: '/dashboard' },
-          { id: 'day',  icon: '⚡', label: 'Today',   href: `/day/${taskDay}` },
-          { id: 'rank', icon: '🏆', label: 'Rank',    href: '/dashboard' },
-          { id: 'out',  icon: '🚪', label: 'Logout',  href: '#' },
+          { id: 'home', IconComp: HomeIcon, label: 'Home',    href: '/dashboard' },
+          { id: 'day',  IconComp: ZapIcon, label: 'Today',   href: `/day/${taskDay}` },
+          { id: 'rank', IconComp: TrophyIcon, label: 'Rank',    href: '/dashboard' },
+          { id: 'out',  IconComp: LogOutIcon, label: 'Logout',  href: '#' },
         ].map(item => (
           item.id === 'out'
             ? <button key="out" className="mobile-nav-item" onClick={handleLogout} style={{ background: 'none', border: 'none' }}>
-                <span style={{ fontSize: '20px' }}>{item.icon}</span>
+                <item.IconComp size={18} />
                 <span>{item.label}</span>
               </button>
             : <Link key={item.id} href={item.href} className={`mobile-nav-item ${activeNav === item.id ? 'active' : ''}`} onClick={() => setActiveNav(item.id)}>
-                <span style={{ fontSize: '20px' }}>{item.icon}</span>
+                <item.IconComp size={18} />
                 <span>{item.label}</span>
               </Link>
         ))}

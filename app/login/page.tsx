@@ -4,6 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import {
+  XCircleIcon,
+  InfoIcon,
+  ArrowRightIcon,
+} from '@/app/icons';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -40,7 +45,7 @@ export default function LoginPage() {
 
         <div className="auth-card">
           <div style={{ marginBottom: '24px' }}>
-            <h1 style={{ fontSize: '22px', marginBottom: '6px' }}>Welcome back 👋</h1>
+            <h1 style={{ fontSize: '22px', marginBottom: '6px' }}>Welcome back</h1>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Sign in with your username, email, or secret passphrase</p>
           </div>
 
@@ -73,13 +78,14 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div style={{ background: 'var(--rose-dim)', border: '1px solid rgba(244,63,94,0.2)', color: 'var(--rose)', padding: '10px 14px', borderRadius: '10px', fontSize: '12px', lineHeight: 1.5 }}>
-                ❌ {error}
+              <div style={{ background: 'var(--rose-dim)', border: '1px solid rgba(244,63,94,0.2)', color: 'var(--rose)', padding: '10px 14px', borderRadius: '10px', fontSize: '12px', lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <XCircleIcon size={16} color="var(--rose)" />
+                <span>{error}</span>
               </div>
             )}
 
-            <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ justifyContent: 'center', marginTop: '4px' }}>
-              {loading ? <><div className="spinner" />Signing in...</> : 'Sign In →'}
+            <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ justifyContent: 'center', marginTop: '4px', gap: '6px' }}>
+              {loading ? <><div className="spinner" />Signing in...</> : <>Sign In <ArrowRightIcon size={14} /></>}
             </button>
           </form>
 
@@ -89,9 +95,12 @@ export default function LoginPage() {
           </div>
 
           {/* Hint box */}
-          <div style={{ marginTop: '16px', background: 'var(--amber-dim)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px', padding: '12px 14px', fontSize: '12px', lineHeight: 1.6, color: 'var(--amber)' }}>
-            💡 Your secret passphrase format:<br />
-            <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>word-number-word-number-word</code> (e.g. <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>amber-842-blaze-99-cedar</code>)
+          <div style={{ marginTop: '16px', background: 'var(--amber-dim)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px', padding: '12px 14px', fontSize: '12px', lineHeight: 1.6, color: 'var(--amber)', display: 'flex', gap: '8px' }}>
+            <InfoIcon size={16} color="var(--amber)" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div>
+              Your secret passphrase format:<br />
+              <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>word-number-word-number-word</code> (e.g. <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>amber-842-blaze-99-cedar</code>)
+            </div>
           </div>
         </div>
       </div>
