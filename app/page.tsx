@@ -390,7 +390,7 @@ export default function LandingPage() {
 
         {/* Hero buttons — stack on phone */}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', width: '100%' }}>
-          <Link href={user.isLoggedIn ? '/dashboard' : '/signup'} className="btn btn-primary btn-lg" style={{ gap: '6px', flex: '1 1 200px', justifyContent: 'center', maxWidth: '280px' }}>
+          <Link href="/dashboard" className="btn btn-primary btn-lg" style={{ gap: '6px', flex: '1 1 200px', justifyContent: 'center', maxWidth: '280px' }}>
             <RocketIcon size={16} /> {user.isLoggedIn ? 'Open Dashboard' : 'Start Challenge — Free'}
           </Link>
           <Link href="/day/1" className="btn btn-secondary btn-lg" style={{ gap: '6px', flex: '1 1 160px', justifyContent: 'center', maxWidth: '200px' }}>
