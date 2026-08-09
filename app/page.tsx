@@ -358,10 +358,6 @@ export default function LandingPage() {
         <div className="navbar-inner">
           <Link href="/" className="navbar-logo">AB<span>Talks</span></Link>
           <div className="navbar-actions">
-            {/* Settings icon-only on mobile */}
-            <button className="icon-btn" onClick={() => setShowSettings(true)} title="Settings">
-              <SettingsIcon size={16} />
-            </button>
             <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
               {theme === 'dark' ? <SunIcon size={16} color="var(--amber)" /> : <MoonIcon size={16} color="var(--violet-light)" />}
             </button>
@@ -370,15 +366,7 @@ export default function LandingPage() {
                 Dashboard <ArrowRightIcon size={12} />
               </Link>
             ) : (
-              <>
-                <Link href="/dashboard" className="btn btn-ghost btn-sm" style={{ gap: '4px' }}>
-                  <DashboardIcon size={12} /> Dashboard
-                </Link>
-                <Link href="/login" className="btn btn-ghost btn-sm">Sign in</Link>
-                <Link href="/signup" className="btn btn-primary btn-sm" style={{ gap: '4px' }}>
-                  Enroll <ArrowRightIcon size={12} />
-                </Link>
-              </>
+              <Link href="/login" className="btn btn-primary btn-sm">Sign in</Link>
             )}
           </div>
         </div>
