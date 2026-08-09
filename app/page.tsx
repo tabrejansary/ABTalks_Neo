@@ -339,7 +339,6 @@ export default function LandingPage() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
-  const [authWarn, setAuthWarn] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
@@ -347,10 +346,6 @@ export default function LandingPage() {
     window.addEventListener('scroll', fn);
     return () => window.removeEventListener('scroll', fn);
   }, []);
-
-  const guardPreview = (e: React.MouseEvent) => {
-    if (!user.isLoggedIn) { e.preventDefault(); setAuthWarn(true); setTimeout(() => setAuthWarn(false), 4000); }
-  };
 
   return (
     <div style={{ width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
@@ -376,6 +371,9 @@ export default function LandingPage() {
               </Link>
             ) : (
               <>
+                <Link href="/dashboard" className="btn btn-ghost btn-sm" style={{ gap: '4px' }}>
+                  <DashboardIcon size={12} /> Dashboard
+                </Link>
                 <Link href="/login" className="btn btn-ghost btn-sm">Sign in</Link>
                 <Link href="/signup" className="btn btn-primary btn-sm" style={{ gap: '4px' }}>
                   Enroll <ArrowRightIcon size={12} />
@@ -402,18 +400,12 @@ export default function LandingPage() {
           India&apos;s 60-day coding challenge. One real challenge every day. Cross-verify GitHub commits and LinkedIn posts. Build proof of work.
         </p>
 
-        {authWarn && (
-          <div style={{ background: 'var(--rose-dim)', border: '1px solid rgba(244,63,94,0.3)', color: 'var(--rose)', padding: '10px 14px', borderRadius: '12px', fontSize: '12px', marginBottom: '16px', animation: 'fade-in-up 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <LockIcon size={14} color="var(--rose)" /> Please enroll or sign in first to preview challenge days.
-          </div>
-        )}
-
         {/* Hero buttons — stack on phone */}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', width: '100%' }}>
           <Link href={user.isLoggedIn ? '/dashboard' : '/signup'} className="btn btn-primary btn-lg" style={{ gap: '6px', flex: '1 1 200px', justifyContent: 'center', maxWidth: '280px' }}>
             <RocketIcon size={16} /> {user.isLoggedIn ? 'Open Dashboard' : 'Start Challenge — Free'}
           </Link>
-          <Link href="/day/1" onClick={guardPreview} className="btn btn-secondary btn-lg" style={{ gap: '6px', flex: '1 1 160px', justifyContent: 'center', maxWidth: '200px' }}>
+          <Link href="/day/1" className="btn btn-secondary btn-lg" style={{ gap: '6px', flex: '1 1 160px', justifyContent: 'center', maxWidth: '200px' }}>
             Preview Day 1 <ArrowRightIcon size={14} />
           </Link>
         </div>

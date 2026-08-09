@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import { getChallengeForDay } from '@/data/challenges';
 import {
   FlameIcon,
   ShieldIcon,
@@ -483,13 +484,9 @@ export default function Dashboard() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [toast, setToast] = useState('');
   const [activeNav, setActiveNav] = useState('home');
+  const [isGuestView, setIsGuestView] = useState(false);
 
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!user.isLoggedIn) router.push('/login');
-  }, [user.isLoggedIn, router]);
-
-  // Onboarding
+  // Onboarding - only for logged in users
   useEffect(() => {
     if (!user.isLoggedIn) return;
     const seen = localStorage.getItem('abtalks-tour-v4');
@@ -508,22 +505,145 @@ export default function Dashboard() {
 
   const handleLogout = () => { logout(); router.push('/'); };
 
-  if (!user.isLoggedIn) return null;
+  // Guest user data for preview
+  const guestUser = {
+    name: 'Guest User',
+    email: 'guest@abtalks.in',
+    college: 'Preview Mode',
+    username: 'guest',
+    passphrase: 'preview-only',
+    track: 'SE' as const,
+    githubUsername: '',
+    linkedinUrl: '',
+    isLoggedIn: false,
+    currentDay: 1,
+    streak: 0,
+    longestStreak: 0,
+    daysCompleted: 0,
+    streakShields: 0,
+    referralCode: 'DEMO123',
+    referrals: 0,
+    badges: [
+      { id: 'day1', label: 'First Step', icon: '🚀', earned: false },
+      { id: 'week1', label: 'Week 1 Warrior', icon: '🗡️', earned: false, shieldReward: true },
+      { id: 'week2', label: 'Week 2 Veteran', icon: '⚔️', earned: false, shieldReward: true },
+      { id: 'perfectweek', label: 'Perfect Week', icon: '✨', earned: false },
+      { id: 'earlybird', label: 'Early Bird', icon: '🐦', earned: false },
+    ],
+    days: Array.from({ length: 60 }, (_, i) => ({
+      day: i + 1,
+      status: i === 0 ? 'today' : 'future' as const,
+      submittedAt: null,
+      github: null,
+      linkedin: null,
+    })),
+  };
 
-  const days = user.days;
+  // Use guest data if in guest view mode
+  const displayUser = isGuestView ? guestUser : user;
+  const isLoggedIn = user.isLoggedIn && !isGuestView;
+
+  // Show guest view toggle for non-logged-in users
+  if (!user.isLoggedIn && !isGuestView) {
+    return (
+      <div style={{ minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div className="glass-card" style={{ padding: '40px', maxWidth: '500px', width: '100%', textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--violet), var(--cyan))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 800, color: '#fff' }}>
+              AB
+            </div>
+          </div>
+          <h1 style={{ fontSize: '28px', fontFamily: 'var(--font-display)', marginBottom: '12px' }}>ABTalks Dashboard Preview</h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.6 }}>
+            Explore the dashboard features before enrolling. This is a demo with sample data.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
+            <button
+              className="btn btn-primary btn-lg"
+              onClick={() => setIsGuestView(true)}
+              style={{ gap: '8px', flex: '1 1 200px' }}
+            >
+              <span>View Dashboard Demo</span>
+            </button>
+            <Link href="/signup" className="btn btn-secondary btn-lg" style={{ gap: '8px', flex: '1 1 200px' }}>
+              Enroll Free
+            </Link>
+          </div>
+          <Link href="/login" style={{ color: 'var(--violet-light)', fontWeight: 600, fontSize: '13px' }}>
+            Already have an account? Sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn && !isGuestView) return null;
+
+  const days = displayUser.days;
   const missedDays = days.filter(d => d.status === 'missed').map(d => d.day);
-  const completion = Math.round((user.daysCompleted / 60) * 100);
+  const completion = Math.round((displayUser.daysCompleted / 60) * 100);
 
   const currentTask = days.find(d => d.status === 'today');
-  const taskDay = currentTask?.day ?? user.currentDay;
+  const taskDay = currentTask?.day ?? displayUser.currentDay;
+  const taskChallenge = getChallengeForDay(taskDay);
 
   return (
     <div style={{ minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', background: 'var(--bg-primary)', paddingBottom: '80px' }}>
+      {/* Guest View Banner */}
+      {isGuestView && (
+        <div style={{ 
+          background: 'rgba(124,58,237,0.1)', 
+          border: '1px solid rgba(124,58,237,0.3)', 
+          borderRadius: '0 0 12px 12px',
+          padding: '8px 16px',
+          textAlign: 'center',
+          marginBottom: '0'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '12px', color: 'var(--violet-light)', fontWeight: 600 }}>
+              🎭 Preview Mode - Demo Data
+            </span>
+            <button
+              onClick={() => setIsGuestView(false)}
+              style={{
+                background: 'var(--violet)',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '4px 12px',
+                fontSize: '11px',
+                fontWeight: 600,
+                color: '#fff',
+                cursor: 'pointer',
+              }}
+            >
+              Exit Preview
+            </button>
+            <Link 
+              href="/signup" 
+              style={{ 
+                background: 'transparent', 
+                border: '1px solid var(--violet)', 
+                borderRadius: '20px', 
+                padding: '4px 12px', 
+                fontSize: '11px', 
+                fontWeight: 600, 
+                color: 'var(--violet-light)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center'
+              }}
+            >
+              Enroll Free
+            </Link>
+          </div>
+        </div>
+      )}
+      
       {showTour && <Tour onDone={finishTour} />}
-      {showShieldModal && <ShieldModal missedDays={missedDays.length > 0 ? missedDays : [user.currentDay - 1]} onUse={handleUseShield} onClose={() => setShowShieldModal(false)} />}
+      {showShieldModal && <ShieldModal missedDays={missedDays.length > 0 ? missedDays : [displayUser.currentDay - 1]} onUse={handleUseShield} onClose={() => setShowShieldModal(false)} />}
       {showProfileModal && (
         <ProfileModal
-          user={user}
+          user={displayUser}
           theme={theme}
           toggleTheme={toggleTheme}
           onLogout={handleLogout}
@@ -566,18 +686,18 @@ export default function Dashboard() {
                 fontSize: '11px', fontWeight: 700, color: 'var(--violet-light)',
               }}
             >
-              <ThumbsUpIcon size={12} color="var(--violet-light)" /> {user.daysCompleted * 10}
+              <ThumbsUpIcon size={12} color="var(--violet-light)" /> {displayUser.daysCompleted * 10}
             </div>
 
             {/* Streak Shields Pill */}
-            {user.streakShields > 0 && (
+            {displayUser.streakShields > 0 && (
               <button
                 className="streak-shield"
                 onClick={() => setShowShieldModal(true)}
                 title="Use streak shield"
                 style={{ padding: '6px 10px', fontSize: '11px', gap: '4px' }}
               >
-                <ShieldIcon size={12} /> {user.streakShields}
+                <ShieldIcon size={12} /> {displayUser.streakShields}
               </button>
             )}
 
@@ -600,10 +720,10 @@ export default function Dashboard() {
                   fontWeight: 800, fontSize: '12px', color: '#fff',
                 }}
               >
-                {user.name ? user.name[0].toUpperCase() : 'K'}
+                {displayUser.name ? displayUser.name[0].toUpperCase() : 'K'}
               </div>
               <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                {user.name ? user.name.split(' ')[0] : 'Profile'}
+                {displayUser.name ? displayUser.name.split(' ')[0] : 'Profile'}
               </span>
               <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>▾</span>
             </button>
@@ -616,11 +736,11 @@ export default function Dashboard() {
         {/* ---- Welcome header ---- */}
         <div style={{ marginBottom: '18px' }}>
           <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '2px' }}>Good evening</p>
-          <h1 style={{ fontSize: '20px', fontFamily: 'var(--font-display)' }}>Hey, {user.name.split(' ')[0]}</h1>
+          <h1 style={{ fontSize: '20px', fontFamily: 'var(--font-display)' }}>Hey, {displayUser.name.split(' ')[0]}</h1>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>@{user.username}</span>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>github: {user.githubUsername}</span>
-            <span className="badge badge-violet" style={{ fontSize: '10px' }}>{user.track} Track</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>@{displayUser.username}</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>github: {displayUser.githubUsername}</span>
+            <span className="badge badge-violet" style={{ fontSize: '10px' }}>{displayUser.track} Track</span>
           </div>
         </div>
 
@@ -634,10 +754,10 @@ export default function Dashboard() {
                   You missed {missedDays.length === 1 ? `Day ${missedDays[0]}` : `${missedDays.length} days`}
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                  You have <strong style={{ color: 'var(--amber)' }}>{user.streakShields} shield{user.streakShields !== 1 ? 's' : ''}</strong> &mdash; use one to recover your streak.
+                  You have <strong style={{ color: 'var(--amber)' }}>{displayUser.streakShields} shield{displayUser.streakShields !== 1 ? 's' : ''}</strong> &mdash; use one to recover your streak.
                 </div>
               </div>
-              {user.streakShields > 0 && (
+              {displayUser.streakShields > 0 && (
                 <button className="streak-shield btn-sm" onClick={() => setShowShieldModal(true)} style={{ gap: '4px' }}>
                   <ShieldIcon size={14} /> Use Shield
                 </button>
@@ -660,12 +780,12 @@ export default function Dashboard() {
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '12px' }}>
                 <FlameIcon size={32} color="var(--amber)" className="animate-streak" />
                 <span style={{ fontSize: '48px', fontWeight: 800, fontFamily: 'var(--font-display)', lineHeight: 1, background: 'linear-gradient(135deg,#F97316,#F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  {user.streak}
+                  {displayUser.streak}
                 </span>
                 <span style={{ fontSize: '16px', color: 'var(--text-muted)', alignSelf: 'flex-end', paddingBottom: '8px' }}>days</span>
               </div>
               <div style={{ display: 'flex', gap: '20px' }}>
-                {[{ v: user.longestStreak, l: 'BEST' }, { v: user.daysCompleted, l: 'DONE' }, { v: 60 - user.daysCompleted, l: 'LEFT' }].map(({ v, l }) => (
+                {[{ v: displayUser.longestStreak, l: 'BEST' }, { v: displayUser.daysCompleted, l: 'DONE' }, { v: 60 - displayUser.daysCompleted, l: 'LEFT' }].map(({ v, l }) => (
                   <div key={l}>
                     <div style={{ fontSize: '18px', fontWeight: 700, fontFamily: 'var(--font-display)' }}>{v}</div>
                     <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>{l}</div>
@@ -708,9 +828,9 @@ export default function Dashboard() {
         <div className="stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '8px', marginBottom: '14px' }}>
           {[
             { IconComp: CalendarIcon, color: 'var(--violet-light)', val: `${taskDay}/60`, lbl: 'Day' },
-            { IconComp: CodeIcon, color: 'var(--cyan-light)', val: user.track, lbl: 'Track' },
-            { IconComp: TrophyIcon, color: 'var(--amber)', val: `#${user.daysCompleted > 0 ? Math.max(1, 100 - user.daysCompleted) : '—'}`, lbl: 'Rank est.' },
-            { IconComp: UsersIcon, color: 'var(--emerald)', val: user.referrals, lbl: 'Refs' },
+            { IconComp: CodeIcon, color: 'var(--cyan-light)', val: displayUser.track, lbl: 'Track' },
+            { IconComp: TrophyIcon, color: 'var(--amber)', val: `#${displayUser.daysCompleted > 0 ? Math.max(1, 100 - displayUser.daysCompleted) : '—'}`, lbl: 'Rank est.' },
+            { IconComp: UsersIcon, color: 'var(--emerald)', val: displayUser.referrals, lbl: 'Refs' },
           ].map((s, i) => (
             <div key={i} className="glass-card" style={{ padding: '12px 8px', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4px' }}>
@@ -728,11 +848,11 @@ export default function Dashboard() {
             <p style={{ fontSize: '11px', color: 'var(--violet-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <PinIcon size={14} color="var(--violet-light)" /> Active Challenge &middot; Day {taskDay}
             </p>
-            <span className="badge badge-hard">Hard</span>
+            <span className={`badge badge-${taskChallenge.difficulty.toLowerCase()}`}>{taskChallenge.difficulty}</span>
           </div>
-          <h2 style={{ fontSize: '17px', fontFamily: 'var(--font-display)', marginBottom: '6px' }}>Build a CLI Task Manager</h2>
+          <h2 style={{ fontSize: '17px', fontFamily: 'var(--font-display)', marginBottom: '6px' }}>{taskChallenge.title}</h2>
           <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'var(--text-secondary)', marginBottom: '16px' }}>
-            Build a command-line task management app with CRUD operations, persisted to a JSON file.
+            {taskChallenge.description}
           </p>
           <ChallengeCountdown />
           <Link href={`/day/${taskDay}`} className="btn btn-primary w-full" style={{ justifyContent: 'center', textDecoration: 'none', gap: '8px' }}>
